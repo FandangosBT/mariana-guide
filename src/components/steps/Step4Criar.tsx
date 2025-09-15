@@ -21,179 +21,88 @@ const defaultPilotos: Array<{
   recomendado: boolean;
   posicao?: { left: string };
 }> = [
+  // Módulo 1 — Financeiro Vivo + CRM Vivo
   {
-    id: "piloto-financeiro",
-    titulo: "Financeiro Vivo",
-    foco: "Centralizar AP/AR e visão de caixa unificada (hospedagem + eventos)",
+    id: "mod-financeiro-crm",
+    titulo: "OpsUnit Financeiro Vivo + CRM Vivo",
+    foco: "Proposta → contrato → fatura com baixa automática; pipeline organizado e previsibilidade de caixa.",
     icone: DollarSign as unknown as IconType,
-    duracao: "20 dias",
+    duracao: "30 dias",
     escopo: [
-      "Centros de custo e DRE simplificado",
-      "Integração de receitas (OTAs/site/eventos)",
-      "Alertas de vencimento e conciliação básica"
+      "Painel Financeiro (AP/AR, fluxo de caixa, inadimplência)",
+      "Pipeline CRM por origem (site/WhatsApp/bio IG)",
+      "Integração WhatsApp Cloud + Clicksign/DocuSign + gateway pagamentos",
+      "Alertas de vencimento e conciliação com baixa automática",
     ],
     metas: [
-      "Fechamento D+2",
-      "Redução de inadimplência",
-      "Acurácia ≥ 99%"
+      "100% propostas → contrato → fatura",
+      "Fechamento de caixa D+2",
+      "+20% taxa de conversão",
+      "Inadimplência monitorada em D+7/D+30",
     ],
     cronograma: [
-      { title: "Acessos & centros de custo", window: "Dias 1–3" },
-      { title: "Integração receitas/AP-AR", window: "Dias 4–10" },
-      { title: "Conciliação & alertas", window: "Dias 11–15" },
-      { title: "DRE + treinamento", window: "Dias 16–20" }
+      { title: "Acessos, centros de custo e pipelines", window: "Dias 1–5" },
+      { title: "Proposta → assinatura → fatura (integrações)", window: "Dias 6–15" },
+      { title: "Conciliação e alertas de inadimplência", window: "Dias 16–24" },
+      { title: "Dashboards e treinamento", window: "Dias 25–30" },
     ],
     recomendado: true,
-    posicao: { left: "5%" }
+    posicao: { left: "10%" },
   },
+
+  // Módulo 2 — Área do Cliente (Mentoria Premium)
   {
-    id: "piloto-agenda",
-    titulo: "Agenda Integrada",
-    foco: "Disponibilidade única e sem conflitos entre hospedagem e eventos",
-    icone: Calendar,
-    duracao: "20 dias",
-    escopo: [
-      "Sincronização com OTAs (Booking/Airbnb)",
-      "Bloqueios por eventos e manutenção",
-      "Checagem de conflito e sugestões"
-    ],
-    metas: [
-      "Overbooking = 0",
-      "Confiabilidade ≥ 99%",
-      "SLA confirmação < 15 min"
-    ],
-    cronograma: [
-      { title: "Sincronização OTAs", window: "Dias 1–5" },
-      { title: "Bloqueios & regras", window: "Dias 6–10" },
-      { title: "Checagem de conflitos & testes", window: "Dias 11–15" },
-      { title: "Go-live & monitoramento", window: "Dias 16–20" }
-    ],
-    recomendado: true,
-    posicao: { left: "20%" }
-  },
-  {
-    id: "piloto-crm",
-    titulo: "CRM Vivo",
-    foco: "Qualificação de leads e follow-up multi-canal",
-    icone: Users,
-    duracao: "20 dias",
-    escopo: [
-      "Pipelines por nicho (casamentos, corporativo, hospedagem)",
-      "Integração WhatsApp/E-mail",
-      "Tarefas e lembretes automáticos"
-    ],
-    metas: [
-      "↑ taxa de resposta",
-      "↓ tempo de ciclo",
-      "↑ taxa de propostas enviadas"
-    ],
-    cronograma: [
-      { title: "Pipelines por nicho", window: "Dias 1–5" },
-      { title: "Integração WA/E-mail", window: "Dias 6–10" },
-      { title: "Playbooks & tarefas", window: "Dias 11–15" },
-      { title: "Painéis & treinamento", window: "Dias 16–20" }
-    ],
-    recomendado: true,
-    posicao: { left: "35%" }
-  },
-  {
-    id: "piloto-contratos",
-    titulo: "Orçamentos & Contratos Digitais",
-    foco: "Templates por nicho e assinatura eletrônica com auditoria",
-    icone: FileText,
+    id: "mod-area-cliente",
+    titulo: "Área do Cliente (Mentoria Premium)",
+    foco: "Portal exclusivo com trilhas, sessões, materiais e NPS integrados ao CRM.",
+    icone: UserCheck as unknown as IconType,
     duracao: "25 dias",
     escopo: [
-      "Geração de orçamento (PDF/HTML)",
-      "Assinatura eletrônica (Clicksign/DocuSign)",
-      "Trilhas de auditoria (hash/IP/versão)"
+      "Portal por cliente com autenticação e perfis",
+      "Trilhas digitais de mentoria, tarefas e checklists",
+      "Agenda de sessões + registro de conclusões",
+      "NPS/feedback pós‑sessão e notificações (n8n)",
     ],
     metas: [
-      "% assinados ≤ 7 dias",
-      "Redução de retrabalho",
-      "Rastreabilidade total"
+      "≥ 80% sessões registradas no portal",
+      "NPS ≥ 70",
+      "-40% tempo em organização manual",
     ],
     cronograma: [
-      { title: "Templates por nicho", window: "Dias 1–5" },
-      { title: "Geração + assinatura", window: "Dias 6–12" },
-      { title: "Auditoria & webhooks", window: "Dias 13–18" },
-      { title: "Go-live & métricas", window: "Dias 19–25" }
+      { title: "Onboarding e estrutura do portal", window: "Dias 1–5" },
+      { title: "Trilhas/tarefas + agenda de sessões", window: "Dias 6–12" },
+      { title: "NPS/feedback + notificações", window: "Dias 13–20" },
+      { title: "Go‑live e ajustes com clientes piloto", window: "Dias 21–25" },
     ],
-    recomendado: false,
-    posicao: { left: "50%" }
+    recomendado: true,
+    posicao: { left: "40%" },
   },
+
+  // Módulo 3 — BrandForge (Presença Digital)
   {
-    id: "piloto-estoque",
-    titulo: "Estoque Inteligente",
-    foco: "Evitar rupturas e desperdícios com mínimos e alertas",
-    icone: CheckCircle,
-    duracao: "35 dias",
-    escopo: [
-      "Cadastro + curva ABC",
-      "Mínimos por item e alertas",
-      "Movimentação simples"
-    ],
-    metas: [
-      "Zero ruptura em itens A",
-      "Alertas ≥ 48h",
-      "Giro otimizado"
-    ],
-    cronograma: [
-      { title: "Cadastro & curva ABC", window: "Dias 1–7" },
-      { title: "Mínimos & alertas", window: "Dias 8–15" },
-      { title: "Movimentação & relatórios", window: "Dias 16–25" },
-      { title: "Treinamento & otimização", window: "Dias 26–35" }
-    ],
-    recomendado: false,
-    posicao: { left: "65%" }
-  },
-  {
-    id: "piloto-paginas",
-    titulo: "Página Institucional + Landing Pages Segmentadas",
-    foco: "Captação por nicho e presença digital sólida",
+    id: "mod-brandforge",
+    titulo: "BrandForge (Presença Digital)",
+    foco: "Site 1.0 com LPs e CTAs rastreáveis integradas ao CRM.",
     icone: Target,
-    duracao: "15 dias",
+    duracao: "20 dias",
     escopo: [
-      "Site institucional leve",
-      "LPs por nicho (casamentos, corporativo, hospedagem)",
-      "Integração com formulários e CRM"
+      "Site institucional enxuto (institucional + formulário)",
+      "Landing Page por origem (site/IG) com tags",
+      "Integração LP → CRM + Meta Pixel",
+      "Painel de leads por origem",
     ],
     metas: [
-      "↑ tráfego orgânico",
-      "↑ leads qualificados",
-      "Base para automações"
+      "+30% leads inbound via site",
+      "≥ 90% leads com origem rastreada",
     ],
     cronograma: [
-      { title: "Site institucional", window: "Dias 1–5" },
-      { title: "LPs + formulários", window: "Dias 6–10" },
-      { title: "Integração CRM & SEO", window: "Dias 11–15" }
+      { title: "Site 1.0 (estrutura e conteúdo)", window: "Dias 1–7" },
+      { title: "LPs por nicho + CTAs com tracking", window: "Dias 8–14" },
+      { title: "Integração CRM + painel por origem", window: "Dias 15–20" },
     ],
-    recomendado: false,
-    posicao: { left: "80%" }
+    recomendado: true,
+    posicao: { left: "70%" },
   },
-  {
-    id: "piloto-funil",
-    titulo: "Funil Digital",
-    foco: "Converter leads em propostas e contratos",
-    icone: Filter,
-    duracao: "15 dias",
-    escopo: [
-      "Qualificação automática",
-      "Integração LP → CRM",
-      "Medição de conversão"
-    ],
-    metas: [
-      "↑ conversão LP → lead",
-      "↓ tempo de resposta",
-      "↑ propostas enviadas"
-    ],
-    cronograma: [
-      { title: "Qualificação & formulários", window: "Dias 1–5" },
-      { title: "Integração LP → CRM & automações", window: "Dias 6–10" },
-      { title: "Medição & ajustes", window: "Dias 11–15" }
-    ],
-    recomendado: false,
-    posicao: { left: "95%" }
-  }
 ];
 
 interface Step4CriarProps {
@@ -221,7 +130,8 @@ export const Step4Criar = ({ onNext, sessionId }: Step4CriarProps) => {
           recomendado: p.recommended,
           posicao: { left: `${10 + idx * 25}%` }
         }));
-        setPilotos(mapped);
+        // Mantém os módulos planejados e adiciona sugestões vindas do backend
+        setPilotos([...defaultPilotos, ...mapped]);
       })
       .catch(() => { /* mantém fallback */ })
       .finally(() => { /* no-op */ });
@@ -239,7 +149,7 @@ export const Step4Criar = ({ onNext, sessionId }: Step4CriarProps) => {
       {
         title: "Kickoff & Arquitetura Leve",
         description:
-          "Infra mínima, acessos e templates. Conexão com software atual (API/CSV/ICS)",
+          "Infra mínima, acessos e templates. Conexão com software atual (APIs/CSV/ICS)",
         status: "completed" as const,
         window: "Semanas 1-2",
         progress: 100,
@@ -250,61 +160,29 @@ export const Step4Criar = ({ onNext, sessionId }: Step4CriarProps) => {
         ],
       },
       {
-        title: "Financeiro Vivo",
-        description: "Centralização AP/AR, conciliação e DRE simplificado",
+        title: "Módulo 1 — Financeiro + CRM (alto impacto/baixo esforço)",
+        description: "Centralização AP/AR + pipeline com integrações e conciliação automática",
         status: "in-progress" as const,
-        window: "Semanas 3-5",
+        window: "Semanas 3-6",
         progress: 60,
-        tasks: getTasks("piloto-financeiro"),
+        tasks: getTasks("mod-financeiro-crm"),
       },
       {
-        title: "Agenda Integrada",
+        title: "Módulo 2 — Área do Cliente (alto impacto/médio esforço)",
         description:
-          "Calendário único: OTAs, bloqueios por eventos e checagem de conflitos",
+          "Portal de mentorias com trilhas, sessões, materiais e NPS",
         status: "upcoming" as const,
-        window: "Semanas 6-8",
+        window: "Semanas 7-10",
         progress: 0,
-        tasks: getTasks("piloto-agenda"),
+        tasks: getTasks("mod-area-cliente"),
       },
       {
-        title: "CRM Vivo",
-        description: "Pipelines por nicho, integrações e playbooks com tarefas",
+        title: "Módulo 3 — BrandForge (médio impacto/baixo esforço)",
+        description: "Site 1.0 + LPs com CTAs rastreáveis integradas ao CRM",
         status: "upcoming" as const,
-        window: "Semanas 9-10",
+        window: "Semanas 11-13",
         progress: 0,
-        tasks: getTasks("piloto-crm"),
-      },
-      {
-        title: "Orçamentos & Contratos Digitais",
-        description: "Templates por nicho, assinatura eletrônica e auditoria",
-        status: "upcoming" as const,
-        window: "Fase 2 (90+ dias)",
-        progress: 0,
-        tasks: getTasks("piloto-contratos"),
-      },
-      {
-        title: "Estoque Inteligente",
-        description: "Cadastro/ABC, mínimos, alertas e movimentação simplificada",
-        status: "upcoming" as const,
-        window: "Fase 2 (90+ dias)",
-        progress: 0,
-        tasks: getTasks("piloto-estoque"),
-      },
-      {
-        title: "Página Institucional + Landing Pages Segmentadas",
-        description: "Presença digital sólida e captação por nicho integrada ao CRM",
-        status: "upcoming" as const,
-        window: "Fase 2 (90+ dias)",
-        progress: 0,
-        tasks: getTasks("piloto-paginas"),
-      },
-      {
-        title: "Funil Digital",
-        description: "Qualificação automática, integração LP → CRM e medição de conversão",
-        status: "upcoming" as const,
-        window: "Fase 2 (90+ dias)",
-        progress: 0,
-        tasks: getTasks("piloto-funil"),
+        tasks: getTasks("mod-brandforge"),
       },
     ];
   }, [selectedPiloto, pilotos]);
@@ -339,7 +217,7 @@ export const Step4Criar = ({ onNext, sessionId }: Step4CriarProps) => {
             CRIAR
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Plano de 90 dias com entregas semanais, baixo risco e alto impacto.
+            Plano de 60–90 dias com entregas semanais, baixo risco e alto impacto.
           </p>
         </header>
 
@@ -497,13 +375,13 @@ export const Step4Criar = ({ onNext, sessionId }: Step4CriarProps) => {
           <div className="step-card step-4 text-center animate-slide-up">
             <h3 className="text-xl font-bold mb-4">Estratégia Recomendada</h3>
             <p className="text-muted-foreground mb-6">
-              Começar com os pilotos de <strong>Financeiro Vivo</strong>, <strong>Agenda Integrada</strong> e <strong>CRM Vivo</strong> oferece o maior retorno
-              sobre investimento e impacto imediato na operação.
+              Começar com <strong>Financeiro + CRM</strong>, seguido de <strong>Área do Cliente</strong> e <strong>BrandForge</strong> obedece a matriz Impacto × Esforço do diagnóstico
+              e maximiza o retorno nas primeiras semanas.
             </p>
             <div className="flex justify-center">
               <div className="p-6 bg-step-4/10 rounded-lg">
-                <div className="text-3xl font-bold text-step-4 mb-2">60 dias</div>
-                <div className="text-base text-muted-foreground">Previsão de entrega</div>
+                <div className="text-3xl font-bold text-step-4 mb-2">~75 dias</div>
+                <div className="text-base text-muted-foreground">Previsão total (3 módulos)</div>
               </div>
             </div>
           </div>

@@ -124,11 +124,11 @@ type ProdutoOrcamento = {
 
 const orcamentoOptions: ProdutoOrcamento[] = [
   {
-    id: "financeiro-vivo",
-    nome: "OpsUnit Financeiro Vivo",
-    descricao: "Centralização de contas a pagar/receber, conciliação e DRE simplificado",
-    precoBase: 8665,
-    economiaMensal: 1200,
+    id: "financeiro-gestao-contas-clientes",
+    nome: "OpsUnit Financeiro Vivo + Gestão de Contas e Clientes",
+    descricao: "AP/AR, fluxo de caixa e cadastro de clientes centralizados com conciliação e alertas",
+    precoBase: 4896,
+    economiaMensal: 1100,
     modulos: [],
     icon: DollarSign,
     cor: "green",
@@ -136,72 +136,60 @@ const orcamentoOptions: ProdutoOrcamento[] = [
     paybackMeses: 4
   },
   {
-    id: "agenda-integrada",
-    nome: "OpsUnit Agenda Integrada",
-    descricao: "Agendamento inteligente com confirmação ativa e overbooking controlado",
-    precoBase: 5767,
-    economiaMensal: 1300,
-    modulos: [],
-    icon: Calendar,
-    cor: "blue",
-    roiPrevisto: 340,
-    paybackMeses: 3
-  },
-  {
     id: "crm-vivo",
     nome: "OpsUnit CRM Vivo",
-    descricao: "Playbooks comerciais, reengajamento e gestão de leads end-to-end",
-    precoBase: 7693,
-    economiaMensal: 1500,
+    descricao: "Pipeline, playbooks e follow-ups automáticos integrados ao WhatsApp",
+    precoBase: 3670,
+    economiaMensal: 950,
     modulos: [],
     icon: Users,
     cor: "fuchsia",
-    roiPrevisto: 360,
-    paybackMeses: 3
+    roiPrevisto: 340,
+    paybackMeses: 4
   },
   {
-    id: "contratos-digitais",
-    nome: "OpsUnit Orçamentos & Contratos",
-    descricao: "Gestão de propostas, contratos e assinaturas digitais fim a fim",
-    precoBase: 5740,
-    economiaMensal: 900,
+    id: "gestao-contratos",
+    nome: "OpsUnit Gestão de Contratos",
+    descricao: "Templates, assinatura eletrônica e auditoria com trilhas completas",
+    precoBase: 3672,
+    economiaMensal: 800,
     modulos: [],
     icon: FileText,
     cor: "purple",
-    roiPrevisto: 420,
-    paybackMeses: 3
+    roiPrevisto: 300,
+    paybackMeses: 4
   },
   {
-    id: "estoque-inteligente",
-    nome: "OpsUnit Estoque Inteligente",
-    descricao: "Gestão inteligente de insumos com controle por lote, validade e mínimos",
-    precoBase: 7675,
-    economiaMensal: 1200,
+    id: "social-media-campanhas",
+    nome: "OpsUnit Gestão de Social Media e Campanhas",
+    descricao: "Gestão de conteúdo e campanhas com integração ao CRM e métricas",
+    precoBase: 5508,
+    economiaMensal: 1000,
     modulos: [],
-    icon: Package,
+    icon: BarChart3,
     cor: "orange",
     roiPrevisto: 280,
-    paybackMeses: 4
+    paybackMeses: 5
   },
   {
     id: "brandforge-infraestrutura",
     nome: "BrandForge Infraestrutura Digital",
-    descricao: "Base digital com site institucional, landing pages e funil de aquisição",
+    descricao: "Site institucional, LPs e integrações de captação conectadas ao CRM",
     precoBase: 0,
     modulos: [
-      { id: "pagina-institucional-landing", nome: "Página Institucional + Landing Pages por Nicho", preco: 4885, obrigatorio: false },
-      { id: "funil-digital", nome: "Funil Digital", preco: 4660, obrigatorio: false }
+      { id: "pagina-institucional-crm-cta", nome: "Página institucional + CRM + CTA Whatsapp", preco: 3670, obrigatorio: false, economiaMensal: 700 },
+      { id: "area-cliente", nome: "Área do Cliente", preco: 2447, obrigatorio: false, economiaMensal: 700 }
     ],
     icon: Target,
     cor: "pink",
-    roiPrevisto: 380,
-    paybackMeses: 5
+    roiPrevisto: 350,
+    paybackMeses: 6
   },
   {
-    id: "timeos-integration",
+    id: "timeos",
     nome: "TimeOS",
     descricao: "Plataforma unificada e integração com WhatsApp + inteligência de mercado",
-    precoBase: 22570,
+    precoBase: 22760,
     economiaMensal: 1800,
     modulos: [],
     icon: MessageSquare,
@@ -221,8 +209,8 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
   const [isSimulating, setIsSimulating] = useState(false);
   const [showOrcamento, setShowOrcamento] = useState(false);
 
-  // Estado do modelo de precificação
-  const [modeloPrecificacao, setModeloPrecificacao] = useState<'licenca' | 'assinatura'>('licenca');
+  // Modelo de precificação fixo: licença permanente
+  const modeloPrecificacao: 'licenca' = 'licenca';
 
   // Estado do carrinho de compras
   const [carrinho, setCarrinho] = useState<{
@@ -252,25 +240,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
 
   const receitaMensalEstimada = calcularEconomiaMensal(debouncedCarrinho);
 
-  // Auto-select products for assinatura model
-  useEffect(() => {
-    if (modeloPrecificacao === 'assinatura') {
-      const novosProdutos: Record<string, { selecionado: boolean; modulos: Record<string, boolean> }> = {};
-      orcamentoOptions.forEach(produto => {
-        if (produto.id !== 'timeos-integration') {
-          novosProdutos[produto.id] = { selecionado: true, modulos: {} };
-          produto.modulos.forEach(modulo => {
-            if (modulo.obrigatorio) {
-              novosProdutos[produto.id].modulos[modulo.id] = true;
-            }
-          });
-        }
-      });
-      setCarrinho(novosProdutos);
-    } else {
-      setCarrinho({});
-    }
-  }, [modeloPrecificacao]);
+  // Removido modo assinatura; seleção começa vazia e é personalizada pelo usuário
 
   const startSimulation = () => {
     setIsSimulating(!isSimulating);
@@ -302,23 +272,9 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
     }));
   };
 
-  // Cálculo de custos totais baseado no modelo de precificação
+  // Cálculo de custos totais (licença permanente)
   const calcularCustoTotal = (cartState = debouncedCarrinho) => {
-    if (modeloPrecificacao === 'assinatura') {
-      const VALOR_MENSAL_SEM_TIMEOS = 3950;
-      const VALOR_MENSAL_COM_TIMEOS = 5830;
-      let temOutro = false;
-      let temTimeOS = false;
-      Object.entries(cartState).forEach(([produtoId, config]) => {
-        if (config.selecionado) {
-          if (produtoId === 'timeos-integration') temTimeOS = true;
-          else temOutro = true;
-        }
-      });
-      if (!temOutro && !temTimeOS) return 0;
-      return temTimeOS ? VALOR_MENSAL_COM_TIMEOS : VALOR_MENSAL_SEM_TIMEOS;
-    }
-    // Licença permanente: soma dos preços-base e módulos
+    // Soma dos preços-base e módulos
     let total = 0;
     Object.entries(cartState).forEach(([produtoId, config]) => {
       if (config.selecionado) {
@@ -334,7 +290,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
     return total;
   };
 
-  // Cálculo de ROI baseado no modelo de precificação
+  // Cálculo de ROI (licença permanente)
   const calcularROI = (cartState = debouncedCarrinho) => {
     const custoTotal = calcularCustoTotal(cartState);
     if (custoTotal === 0) return { porcentagem: 0, paybackMeses: 0, retornoMensal: 0 };
@@ -343,18 +299,9 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
     const economiaMensal = receitaMensalEstimada;
     const retornoMensal = economiaMensal;
 
-    let paybackMeses: number;
-    let roiAnual: number;
-
-    if (modeloPrecificacao === 'assinatura') {
-      // Para assinatura, o custo é mensal e fixo
-      paybackMeses = Math.ceil(custoTotal / economiaMensal);
-      roiAnual = ((retornoMensal * 12) / (custoTotal * 12)) * 100;
-    } else {
-      // Para licença permanente, custo é único
-      paybackMeses = Math.ceil(custoTotal / economiaMensal);
-      roiAnual = ((retornoMensal * 12) / custoTotal) * 100;
-    }
+    // Para licença permanente, custo é único
+    const paybackMeses = Math.ceil(custoTotal / economiaMensal);
+    const roiAnual = ((retornoMensal * 12) / custoTotal) * 100;
 
     return {
       porcentagem: Math.round(roiAnual),
@@ -366,8 +313,8 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
   const custoTotal = calcularCustoTotal(debouncedCarrinho);
   const roiData = calcularROI(debouncedCarrinho);
 
-  // Para o Step Card de ROI, calcular investimento total considerando assinatura
-  const investimentoTotalAnual = modeloPrecificacao === 'assinatura' ? custoTotal * 12 : custoTotal;
+  // Para o Step Card de ROI, investimento total é o investimento único
+  const investimentoTotalAnual = custoTotal;
 
   // Insights estimados por módulo, baseados nas soluções propostas nas etapas anteriores
   const insightsPorModulo: Array<{
@@ -378,80 +325,36 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
     bullets: Array<{ label: string; value: string; detalhe?: string; tipo?: 'up' | 'down' | 'neutral' }>
   }> = [
     {
-      id: 'financeiro-vivo',
-      titulo: 'Financeiro Vivo',
+      id: 'financeiro-crm',
+      titulo: 'OpsUnit Financeiro + CRM',
       icon: DollarSign,
       corIcone: 'text-emerald-400',
       bullets: [
-        { label: 'Redução da inadimplência', value: '-20% a -35%', tipo: 'down', detalhe: 'com lembretes automatizados e DRE simplificado' },
-        { label: 'Tempo de conciliação', value: '-60% a -80%', tipo: 'down', detalhe: 'via integrações bancárias e regras de conciliação' },
-        { label: 'Visibilidade de caixa e DRE', value: 'semanal', tipo: 'neutral', detalhe: 'fechamento recorrente com KPIs' }
+        { label: 'Conversão lead → cliente', value: '+15% a +30%', tipo: 'up', detalhe: 'playbooks, SLAs e follow-ups automáticos' },
+        { label: 'Ciclo comercial', value: '-20% a -40%', tipo: 'down', detalhe: 'pipeline organizado e tarefas com lembretes' },
+        { label: 'Inadimplência', value: '-15% a -30%', tipo: 'down', detalhe: 'cobrança automática e D+2 de fechamento' }
       ]
     },
     {
-      id: 'agenda-integrada',
-      titulo: 'Agenda Integrada',
-      icon: Calendar,
-      corIcone: 'text-sky-400',
-      bullets: [
-        { label: 'Redução de no-shows', value: '-30% a -50%', tipo: 'down', detalhe: 'confirmação ativa + WhatsApp + overbooking controlado' },
-        { label: 'Taxa de ocupação', value: '+15% a +25%', tipo: 'up', detalhe: 'distribuição inteligente de reservas' },
-        { label: 'Tempo de reserva', value: '-70%', tipo: 'down', detalhe: 'links de reserva e formulários pré-check-in' }
-      ]
-    },
-    {
-      id: 'crm-vivo',
-      titulo: 'CRM Vivo',
+      id: 'area-cliente',
+      titulo: 'Área do Cliente (Mentoria)',
       icon: Users,
       corIcone: 'text-fuchsia-400',
       bullets: [
-        { label: 'Conversão lead → reserva', value: '+20% a +35%', tipo: 'up', detalhe: 'playbooks, SLAs e follow-ups automáticos' },
-        { label: 'Reativação de hóspedes', value: '+300% a +500%', tipo: 'up', detalhe: 'fluxos de reengajamento segmentados' },
-        { label: 'Tempo de resposta', value: '< 2 min', tipo: 'down', detalhe: 'respostas assistidas e templates' }
+        { label: 'NPS', value: '+15 a +25 pts', tipo: 'up', detalhe: 'experiência premium com trilhas e sessões registradas' },
+        { label: 'Tempo operacional', value: '-30% a -50%', tipo: 'down', detalhe: 'centralização de entregáveis e checklists' },
+        { label: 'Renovação/retensão', value: '+10% a +20%', tipo: 'up', detalhe: 'acompanhamento contínuo e valor percebido' }
       ]
     },
     {
-      id: 'contratos-digitais',
-      titulo: 'Orçamentos & Contratos Digitais',
-      icon: FileText,
-      corIcone: 'text-purple-400',
-      bullets: [
-        { label: 'Ciclo de assinatura', value: '-90%', tipo: 'down', detalhe: 'assinatura eletrônica + trilhas de aprovação' },
-        { label: 'Retrabalho documental', value: '-70% a -90%', tipo: 'down', detalhe: 'versões e templates padronizados' },
-        { label: 'Taxa de aceite', value: '+10% a +20%', tipo: 'up', detalhe: 'propostas claras e rastreáveis' }
-      ]
-    },
-    {
-      id: 'estoque-inteligente',
-      titulo: 'Estoque Inteligente',
-      icon: Package,
-      corIcone: 'text-amber-400',
-      bullets: [
-        { label: 'Desperdício/ruptura', value: '-15% a -30%', tipo: 'down', detalhe: 'controle por lote, validade e mínimo' },
-        { label: 'Tempo de inventário', value: '-50% a -70%', tipo: 'down', detalhe: 'contagem guiada e auditoria contínua' },
-        { label: 'Compliance/Trilha', value: 'em tempo real', tipo: 'neutral', detalhe: 'logs por item e usuário' }
-      ]
-    },
-    {
-      id: 'paginas-landing',
-      titulo: 'Página Institucional + Landing Pages',
+      id: 'brandforge',
+      titulo: 'BrandForge (Presença Digital)',
       icon: Target,
       corIcone: 'text-pink-400',
       bullets: [
-        { label: 'Crescimento orgânico', value: '+30% a +60%', tipo: 'up', detalhe: 'SEO técnico + conteúdo editorial (6–9 meses)' },
-        { label: 'Conversão de LPs', value: '3% a 8%', tipo: 'up', detalhe: 'design orientado a performance' },
-        { label: 'CAC', value: '-15% a -25%', tipo: 'down', detalhe: 'otimização de funil e canais' }
-      ]
-    },
-    {
-      id: 'funil-digital',
-      titulo: 'Funil Digital',
-      icon: MessageSquare,
-      corIcone: 'text-cyan-400',
-      bullets: [
-        { label: 'Leads qualificados (MQLs)', value: '+100% a +200%', tipo: 'up', detalhe: 'captação multicanal e scoring' },
-        { label: 'CPA', value: '-20% a -40%', tipo: 'down', detalhe: 'otimização contínua de campanhas' },
-        { label: 'Tempo de resposta', value: '< 5 min', tipo: 'down', detalhe: 'bots e integrações WhatsApp' }
+        { label: 'Leads inbound', value: '+30% a +60%', tipo: 'up', detalhe: 'site 1.0 + LPs com CTAs rastreáveis' },
+        { label: 'Origem rastreada', value: '≥ 90%', tipo: 'neutral', detalhe: 'integração LP → CRM + tags' },
+        { label: 'CAC', value: '-10% a -20%', tipo: 'down', detalhe: 'melhor distribuição de canais' }
       ]
     }
   ];
@@ -481,18 +384,18 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="step-card step-5 text-center animate-slide-up">
               <TrendingUp className="w-8 h-8 text-step-5 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-step-5 mb-2">+30% a +60%</div>
+              <div className="text-3xl font-bold text-step-5 mb-2">+25% a +45%</div>
               <div className="text-sm text-muted-foreground">Aumento na receita</div>
             </div>
             <div className="step-card step-5 text-center animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <Clock className="w-8 h-8 text-step-5 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-step-5 mb-2">-70% a -90%</div>
+              <div className="text-3xl font-bold text-step-5 mb-2">-40% a -60%</div>
               <div className="text-sm text-muted-foreground">Redução em tarefas manuais</div>
             </div>
             <div className="step-card step-5 text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <Users className="w-8 h-8 text-step-5 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-step-5 mb-2">+300% a +500%</div>
-              <div className="text-sm text-muted-foreground">Hóspedes reativados</div>
+              <div className="text-3xl font-bold text-step-5 mb-2">+60% a +120%</div>
+              <div className="text-sm text-muted-foreground">Leads qualificados (MQLs)</div>
             </div>
           </div>
 
@@ -571,40 +474,14 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                   Personalize Sua Solução
                 </CardTitle>
                 <CardDescription className="text-blue-100/70 text-lg mb-6">
-                  Selecione os módulos que fazem sentido para seu hotel e eventos e veja o ROI em tempo real
+                  Selecione os módulos que fazem sentido para sua operação e veja o ROI em tempo real
                 </CardDescription>
 
-                {/* Toggle Modelo de Precificação */}
-                <div className="flex items-center justify-center mb-6">
-                  <div className="relative inline-flex h-12 items-center rounded-full bg-white/10 p-1 backdrop-blur-sm border border-white/20">
-                    <button
-                      onClick={() => setModeloPrecificacao('licenca')}
-                      className={`relative inline-flex h-8 items-center rounded-full px-6 text-sm font-medium transition-all duration-300 ${
-                        modeloPrecificacao === 'licenca'
-                          ? 'text-white bg-blue-500/80 shadow-lg'
-                          : 'text-blue-100/70 hover:text-white'
-                      }`}
-                    >
-                      Licença Permanente
-                    </button>
-                    <button
-                      onClick={() => setModeloPrecificacao('assinatura')}
-                      className={`relative inline-flex h-8 items-center rounded-full px-6 text-sm font-medium transition-all duration-300 ${
-                        modeloPrecificacao === 'assinatura'
-                          ? 'text-white bg-blue-500/80 shadow-lg'
-                          : 'text-blue-100/70 hover:text-white'
-                      }`}
-                    >
-                      Assinatura Mensal
-                    </button>
-                  </div>
-                </div>
+                {/* Modelo de Precificação: somente licença permanente */}
 
                 {custoTotal > 0 && (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-400/30 rounded-full">
-                    <span className="text-green-300 text-sm font-medium">
-                      {modeloPrecificacao === 'assinatura' ? 'Custo Mensal:' : 'Investimento Total:'}
-                    </span>
+                    <span className="text-green-300 text-sm font-medium">Investimento Total:</span>
                     <span className="text-green-400 font-bold">R$ {custoTotal.toLocaleString()}</span>
                   </div>
                 )}
@@ -738,10 +615,8 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                                   m => carrinho[produtoId]?.modulos?.[m.id]
                                 );
 
-                                // Calcular preços baseado no modelo de precificação
-                                const precoBaseAjustado = modeloPrecificacao === 'assinatura'
-                                  ? (produto.precoBase * 0.8) / 12
-                                  : produto.precoBase;
+                                // Preço base (licença permanente)
+                                const precoBaseAjustado = produto.precoBase;
 
                                 return (
                                   <div key={produtoId} className="p-3 bg-white/5 rounded-lg">
@@ -751,17 +626,13 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                                         <span className="text-green-400 font-bold">
                                           R$ {precoBaseAjustado.toLocaleString()}
                                         </span>
-                                        {modeloPrecificacao === 'assinatura' && (
-                                          <div className="text-xs text-green-300">/mês</div>
-                                        )}
+                                        
                                       </div>
                                     </div>
                                     {modulosSelecionados.length > 0 && (
                                       <div className="text-sm text-blue-100/70 space-y-1">
                                         {modulosSelecionados.map(modulo => {
-                                          const precoModuloAjustado = modeloPrecificacao === 'assinatura'
-                                            ? (modulo.preco * 0.8) / 12
-                                            : modulo.preco;
+                                          const precoModuloAjustado = modulo.preco;
 
                                           return (
                                             <div key={modulo.id} className="flex justify-between">
@@ -770,9 +641,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                                                 <span className="text-green-400">
                                                   +R$ {precoModuloAjustado.toLocaleString()}
                                                 </span>
-                                                {modeloPrecificacao === 'assinatura' && (
-                                                  <div className="text-xs text-green-300">/mês</div>
-                                                )}
+                                                
                                               </div>
                                             </div>
                                           );
@@ -798,16 +667,11 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                                                 <CardContent>
                            <div className="space-y-4">
                               <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                                <span className="text-white">
-                                  {modeloPrecificacao === 'assinatura' ? 'Custo Mensal' : 'Investimento Total'}
-                                </span>
+                                <span className="text-white">Investimento Total</span>
                                 <div className="text-right">
                                   <span className="text-green-400 font-bold text-xl">
                                     R$ {custoTotal.toLocaleString()}
                                   </span>
-                                  {modeloPrecificacao === 'assinatura' && (
-                                    <div className="text-xs text-green-300">/mês</div>
-                                  )}
                                 </div>
                               </div>
 
@@ -823,7 +687,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                                   <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
                                     <span className="text-white flex items-center gap-2">
                                       <Timer className="w-4 h-4" />
-                                      {modeloPrecificacao === 'assinatura' ? 'Break-even' : 'Payback'}
+                                      Payback
                                     </span>
                                     <span className="text-purple-400 font-bold">
                                       {roiData.paybackMeses} meses
@@ -835,20 +699,14 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                                       <div className="text-3xl font-bold text-green-400 mb-1">
                                         {roiData.porcentagem}%
                                       </div>
-                                      <div className="text-sm text-green-300">
-                                        {modeloPrecificacao === 'assinatura'
-                                          ? 'ROI Anual (assinatura)'
-                                          : 'ROI Projetado (12 meses)'}
-                                      </div>
+                                      <div className="text-sm text-green-300">ROI Projetado (12 meses)</div>
                                     </div>
                                   </div>
                                 </>
                               )}
 
                               <div className="text-xs text-blue-100/60 text-center">
-                                {modeloPrecificacao === 'assinatura'
-                                  ? '* Cálculos baseados em economia de 30% nos custos operacionais (assinatura mensal)'
-                                  : '* Cálculos baseados em economia de 30% nos custos operacionais (investimento único)'}
+                                * Cálculos baseados em economia de 30% nos custos operacionais (investimento único)
                               </div>
                             </div>
                           </CardContent>

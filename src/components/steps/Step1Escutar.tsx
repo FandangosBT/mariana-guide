@@ -12,88 +12,78 @@ interface Step1EscutarProps {
 }
 
 const scannerData = {
-  cliente: "Quinta de Brumado",
+  cliente: "Larissa Carvalho Business Growth",
   data: "Setembro/2025",
   consultoria: "Q7 Ops",
   contextoGeral:
-    "A Quinta de Brumado atua em duas frentes principais: hospedagem e eventos (casamentos, aniversários e corporativos), com integração entre ambas. A operação é administrada por três pessoas, mas sem um sistema centralizado. Hoje, a gestão é feita em Excel + WhatsApp + sistema parcial de hospedagem (OTA/Booking), o que gera dificuldade no controle financeiro consolidado, falta de integração entre hospedagem e eventos, perda de tempo na geração de orçamentos personalizados e insegurança quanto à disponibilidade (risco de overbooking). Felipe ressaltou a necessidade de um sistema próprio e flexível, que preserve a personalização do atendimento em eventos e seja capaz de integrar as operações no futuro.",
+    "A agência oferece serviços de marketing digital e mentoria premium, porém enfrenta dificuldades de centralização e organização: informações dispersas em WhatsApp, planilhas e documentos; ausência de página institucional (reduz credibilidade); receio de prospectar por medo de sobrecarga; e a necessidade de uma Área do Cliente para entregar mentorias com mais profissionalismo.",
   processos: {
     financeiro: [
-      "Controle feito em Excel.",
-      "Sistema atual não gera relatórios claros.",
-      "Dificuldade para consolidar despesas, receitas e investimentos.",
-      "Falta de previsibilidade de fluxo de caixa.",
+      "Controle manual em planilhas (fluxo de caixa, contas a pagar/receber).",
+      "Orçamentos feitos de forma pouco automatizada.",
+      "Falta de relatórios consolidados para previsibilidade.",
     ],
-    hospedagem: [
-      "Uso de plataformas externas (Booking/OTAs).",
-      "Risco de overbooking por ausência de integração direta com agenda interna.",
-      "Agenda no Google Calendar usada manualmente.",
+    gestaoClientesLeads: [
+      "Cadastros descentralizados (planilhas, WhatsApp, documentos).",
+      "Gestão de senhas e acessos feita de forma improvisada.",
+      "Leads chegam por diferentes canais sem CRM integrado.",
+      "Área de clientes inexistente (mentoria entregue toda via WhatsApp).",
     ],
-    eventos: [
-      "Orçamentos personalizados feitos de forma manual (contato a contato).",
-      "Planilhas usadas para simular custos.",
-      "Sem histórico organizado de propostas.",
-      "Processos de follow-up não estruturados.",
+    contratosServicos: [
+      "Contratos e faturas geridos manualmente.",
+      "Serviços contratados não visíveis em um único painel.",
+      "KPIs de campanhas acompanhados de forma fragmentada.",
     ],
-    estoque: [
-      "Controle em planilhas e anotações.",
-      "Sem alertas automáticos de reposição ou vencimento.",
-      "Risco de compras emergenciais.",
-    ],
-    captacao: [
-      "Site atual funciona apenas como “outdoor digital” (fotos bonitas, pouca informação estruturada).",
-      "Leads chegam pelo WhatsApp → sem qualificação prévia.",
-      "Redes sociais ativas, mas sem integração com CRM.",
-      "Grande volume de contatos manuais para filtrar (ex.: 350 noivas para ligar).",
-    ],
-    comunicacao: [
-      "WhatsApp é o canal central, mas não integrado ao sistema.",
-      "Hospedagem aceita automação no atendimento inicial.",
-      "Eventos exigem contato humano e personalizado.",
+    conteudoOperacao: [
+      "Produção de conteúdo parcial, sem centralização de indicadores.",
+      "KPIs manuais, sem integração em dashboards.",
+      "Falta de painel único para visão estratégica.",
     ],
   },
   gargalos: [
-    "Sobrecarga financeira: uso de Excel e relatórios fragmentados impede visão estratégica.",
-    "Perda de previsibilidade: falta de integração entre hospedagem e eventos gera insegurança.",
-    "Retrabalho em orçamentos: cálculos refeitos diversas vezes, com alto risco de erro.",
-    "Captação de leads ineficiente: contatos chegam frios, demandando alto esforço de atendimento.",
-    "Dependência de processos manuais em estoque, contratos e agendamento.",
+    "Desperdício de tempo com múltiplos controles manuais.",
+    "Perda de oportunidades: leads não organizados em pipeline.",
+    "Falta de previsibilidade financeira: sem visão de fluxo de caixa em tempo real.",
+    "Imagem comprometida: ausência de site institucional reduz credibilidade.",
+    "Escalabilidade bloqueada: sem centralização, evita-se prospectar novos clientes.",
   ],
   alavancas: {
     curtoPrazo: [
-      "OpsUnit – Financeiro Vivo + CRM: Centralizar contas a pagar/receber; Relatórios automáticos e dashboards de fluxo de caixa; Integração inicial de leads/eventos com hospedagem.",
-      "OpsUnit – Agenda Integrada: Sincronização com OTAs (Booking/Airbnb); Controle de disponibilidade em tempo real; Área interna de agenda para eventos.",
+      "BrandForge™ – Base Digital: página institucional + identidade digital profissional.",
+      "OpsUnit – CRM Vivo + Financeiro Vivo: centralização de clientes, contratos, faturas e fluxo de caixa.",
+      "Área do Cliente (OpsUnit): portal exclusivo para mentorias premium.",
     ],
     medioPrazo: [
-      "OpsUnit – Gestão de Orçamentos & Contratos Digitais: Geração automática de propostas personalizadas; Assinatura eletrônica integrada; Histórico organizado de negociações.",
-      "OpsUnit – Estoque Inteligente: Controle de insumos (restaurante + eventos); Alertas de validade e reposição.",
+      "OpsUnit – KPIs Automatizados: dashboards em tempo real para campanhas.",
+      "OpsUnit – Contratos Digitais: gestão integrada e assinatura online.",
     ],
     longoPrazo: [
-      "BrandForge – Funil Digital & Infraestrutura de Captação: Landing pages segmentadas (casamentos, aniversários, hospedagem); Formulários de pré-qualificação → leads mais quentes; Integração com CRM para follow-up automático.",
-      "TimeOS – Inteligência de Mercado via WhatsApp: Relatórios de ocupação, sazonalidade e receita; Insights preditivos de demanda; Atendimento integrado multicanal.",
+      "TimeOS™ – Painel Integrado: unificação total (financeiro, clientes, leads, contratos e KPIs).",
+      "PrimeTailor™ – Personalizações Sob Medida: fluxos exclusivos quando necessário.",
     ],
   },
   jornada: {
     passo1:
-      "Financeiro + Agenda Integrada (Piloto): Centralizar fluxo financeiro; Eliminar risco de overbooking.",
+      "BrandForge™ + CRM Vivo: Site institucional e base digital organizada; Cadastro único de clientes e leads.",
     passo2:
-      "CRM Vivo + Orçamentos Digitais: Estruturar follow-up de leads; Reduzir tempo de geração de propostas.",
+      "Financeiro Vivo + Área do Cliente: Fluxo de caixa automatizado; Portal exclusivo para entrega da mentoria.",
     passo3:
-      "Estoque Inteligente: Controle preventivo de insumos; Redução de compras emergenciais.",
+      "KPIs Automatizados + Contratos Digitais: Dashboards em tempo real; Contratos e faturas digitais.",
     passo4:
-      "Funil Digital e Marketing Integrado: Leads mais qualificados via páginas segmentadas; Integração com o CRM.",
+      "PrimeTailor™ – Personalizações Sob Medida (se necessário): Ajustes específicos aos fluxos da operação.",
     passoFinal:
-      "TimeOS (Integração Total): Inteligência contínua de gestão via WhatsApp.",
+      "TimeOS™ – Cockpit centralizado da agência. Escalabilidade segura com previsibilidade.",
   },
   ganhos: [
-    "+10 horas semanais livres dos sócios/administradores.",
-    "Zero risco de overbooking entre hospedagem e eventos.",
-    "70% menos tempo gasto na geração de orçamentos.",
-    "Previsibilidade financeira com dashboards automáticos.",
-    "Leads mais quentes, reduzindo esforço de prospecção.",
+    "+40% de tempo liberado com centralização.",
+    "Previsibilidade financeira em tempo real.",
+    "Redução de erros e retrabalho.",
+    "Profissionalização da entrega (área do cliente premium).",
+    "Credibilidade com presença digital sólida (site institucional).",
+    "Segurança para prospectar novos clientes sem medo de desorganização.",
   ],
   resumo:
-    "Hoje a Quinta funciona com muito esforço manual e improvisos. Pequenas automações no financeiro e na agenda integrada já trarão clareza e segurança imediatas. A partir disso, contratos digitais, estoque e captação estruturada vão permitir escalar sem perder o toque humano que diferencia a experiência da Quinta.",
+    "Hoje você tem uma agência com potencial enorme, mas sem painel de controle. Nosso objetivo é forjar essa base digital, organizar contratos, finanças e clientes em um só lugar e criar uma área premium para suas mentorias. Assim, você terá clareza, previsibilidade e confiança para crescer sem perder o controle.",
 };
 
 export const Step1Escutar = ({ onNext, sessionId }: Step1EscutarProps) => {
@@ -103,8 +93,8 @@ export const Step1Escutar = ({ onNext, sessionId }: Step1EscutarProps) => {
     }
     // Criar link para download do arquivo PDF
     const link = document.createElement('a');
-    link.href = '/Scanner-Operacional-EPICO-Quinta-de-Brumado.pdf';
-    link.download = 'Scanner-Operacional-EPICO-Quinta-de-Brumado.pdf';
+    link.href = '/Scanner-Operacional-EPICO-Larissa-Carvalho-Business-Growth.pdf';
+    link.download = 'Scanner-Operacional-EPICO-Larissa-Carvalho-Business-Growth.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -112,7 +102,7 @@ export const Step1Escutar = ({ onNext, sessionId }: Step1EscutarProps) => {
 
   const handleNext = () => {
     if (sessionId) {
-      trackStepComplete(sessionId, "Escutar", { scannerPreset: "QuintaDeBrumado" });
+      trackStepComplete(sessionId, "Escutar", { scannerPreset: "LarissaCardosoBusinessGrowth" });
     }
     onNext();
   };
@@ -348,16 +338,12 @@ function formatKey(key: string) {
   switch (key) {
     case "financeiro":
       return "Financeiro";
-    case "hospedagem":
-      return "Hospedagem";
-    case "eventos":
-      return "Eventos";
-    case "estoque":
-      return "Estoque & Insumos";
-    case "captacao":
-      return "Captação de Leads & Marketing";
-    case "comunicacao":
-      return "Comunicação & Atendimento";
+    case "gestaoClientesLeads":
+      return "Gestão de Clientes e Leads";
+    case "contratosServicos":
+      return "Contratos e Serviços";
+    case "conteudoOperacao":
+      return "Conteúdo & Operação";
     default:
       return key;
   }

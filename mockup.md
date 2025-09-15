@@ -1,94 +1,95 @@
-🧩 Mockup – Arquitetura Leve + Stack de Automação Mínima
-Cliente: Quinta do Brumado (Hospedagem + Eventos)
+Mockup – Arquitetura Leve + Stack de Automação Mínima
+Cliente: Larissa Carvalho – Business Growth (Mentorias Premium)
  Consultoria: Q7 Ops
  Objetivo: entregar um blueprint enxuto, validável em campo em ~90 dias por módulo, com foco em baixo risco, alto impacto e evolução natural para TimeOS.
 1) Visão Geral da Arquitetura
 Princípios: leve, modular, integrável e reversível.
  Camadas:
-Interface & Painéis (Web App) – Next.js/React + Tailwind → dashboards e formulários (agenda, reservas, eventos, orçamentos/contratos, estoque, financeiro).
-Orquestração & Agentes – n8n/Make/Zapier (MVP) para fluxos; workers em Node.js/TS para lógicas críticas.
-Integrações – WhatsApp (Meta Cloud API), Assinatura eletrônica (Clicksign/DocuSign), E-mail/Calendar (Google), Planilhas (apenas no MVP quando necessário).
+Interface & Painéis (Web App) – Next.js/React + Tailwind → dashboards e formulários (leads, pipeline, contratos, faturas, portal de clientes).
+Orquestração & Agentes – n8n/Make/Zapier (MVP) para fluxos simples; workers em Node.js/TS para lógicas críticas.
+Integrações – WhatsApp (Meta Cloud API), Assinatura eletrônica (Clicksign/DocuSign), Gateway de Pagamentos (Asaas, Pagar.me), Google Calendar, planilhas apenas no MVP quando necessário.
 Dados – PostgreSQL + Redis (filas/cache) + Storage (S3/Backblaze).
-Segurança & LGPD – Auth.js, perfis (admin/atendimento/financeiro), trilhas de auditoria, retenção/consentimento.
+Segurança & LGPD – Auth.js, perfis (admin/consultor/financeiro), trilhas de auditoria, retenção/consentimento.
 Deploy – Docker em VPS com backups diários.
-Conexão com software/plataformas atuais:
-Cenário A (API disponível): ler/escrever reservas, eventos, hóspedes e finanças.
-Cenário B (sem API): ingestão CSV; ICS/iCal para calendário; se imprescindível, RPA leve (Puppeteer).
-Diretriz do negócio (captação e disponibilidade): o site hoje opera como “outdoor digital”; é desejado disponibilizar agenda e disponibilidade direto no site para reduzir o retrabalho no WhatsApp e no Google Calendar, bem como evitar overbooking entre hospedagem e eventos.
-2) Módulo 1 – OpsUnit Financeiro Vivo + Agenda Integrada (MVP ~90 dias)
+Diretriz do negócio: evitar retrabalho em WhatsApp/planilhas, garantir previsibilidade de caixa e oferecer experiência premium aos mentorados via portal dedicado.
+2) Módulo 1 – OpsUnit Financeiro Vivo + CRM Vivo (MVP ~90 dias)
 Objetivos
-Dar visibilidade financeira (AP/AR, centros de custo, eventos x hospedagem) e previsibilidade de caixa.
-Unificar calendário de hospedagem + eventos, sincronizando OTAs (Booking/Airbnb) e o site, para eliminar overbooking.
-Fluxos (swimlanes)
-Conciliação de Receitas: OTAs (import/transacional), reservas diretas (site), eventos (orçamentos aprovados → faturas).
-Agenda Única: leitura/gravação em calendário interno; ingestão ICS/iCal dos canais externos; bloqueios por eventos (montagem/limpeza).
-Anti-Overbooking: ao criar reserva/evento, checagem de conflito (espaço/quarto/data) → bloqueio + sugestão de janela alternativa.
-Alertas (WhatsApp/E-mail): pagamentos a vencer, saldo em aberto por evento, datas críticas (feriados/alta demanda).
+Unificar cadastro de leads e clientes.
+Integrar proposta → contrato → fatura com baixa automática.
+Garantir previsibilidade de caixa e dashboards em tempo real.
+Fluxos
+Lead captado (site, bio IG, WhatsApp) → pipeline CRM.
+Proposta digital vinculada ao card → contrato assinado online → fatura emitida.
+Conciliação de recebíveis (cartão, pix, boleto) com baixa automática.
+Alertas de inadimplência e vencimento (WhatsApp/E-mail).
 Entregáveis
-Painel Financeiro (DRE simplificado, AP/AR, centros de custo).
-Painel Agenda/Disponibilidade (ocupação por data/área/quarto, bloqueios de evento).
-Conectores: OTAs (iCal), Google Calendar, export CSV.
+Painel Financeiro (AP/AR, fluxo de caixa, inadimplência).
+Painel Comercial (pipeline de leads, taxa de conversão, ticket médio).
 Stack mínima
- Next.js (painéis), Node.js/TS (serviços), n8n (gatilhos), Postgres, Redis, Meta WhatsApp Cloud API, Auth.js.
+ Next.js (painéis), Node.js/TS (serviços), n8n (gatilhos), Postgres, Redis, Meta WhatsApp Cloud API, Clicksign, gateway pagamentos.
 KPIs MVP
-Overbooking = 0; acurácia de ocupação ≥ 99%; fechamento de caixa D+2; tempo médio para confirmação de reserva < 15 min.
-3) Módulo 2 – CRM Vivo + Orçamentos & Contratos Digitais (MVP ~90 dias)
+100% de propostas → contrato → fatura.
+Fechamento de caixa em D+2.
+Taxa de conversão +20%.
+Inadimplência monitorada em D+7/D+30.
+3) Módulo 2 – Área do Cliente (Mentoria Premium) (MVP ~90 dias)
 Objetivos
-Padronizar a qualificação de leads (hospedagem, casamento, aniversário, corporativo).
-Acelerar orçamentos personalizados e assinar digitalmente contratos. (Clicksign/DocuSign)
+Oferecer portal exclusivo para mentorados com clareza de agenda, trilhas, entregáveis e checkpoints.
+Tirar operação do WhatsApp puro e criar experiência escalável premium.
 Fluxos
-Orçamento Guiado: formulário por nicho → cálculo automático de pacotes/itens → PDF/HTML.
-Assinatura Eletrônica: envio e webhook de retorno atualizando status.
-Arquivamento & Auditoria: PDF em S3; hash, data, IP, versão do template; vínculo ao evento/reserva.
+Onboarding automático após pagamento.
+Upload de materiais, agenda de sessões, registro de tarefas/conclusões.
+NPS/feedback pós-sessão direto no portal.
 Entregáveis
- Painel de Leads/Propostas/Contratos (filtros: pendente, enviado, assinado, expirado).
+Portal web por cliente (acesso individual).
+Trilhas digitais de mentoria com progresso.
+Checklists e tarefas vinculadas.
 Stack mínima
- Next.js, Node.js/TS (template engine), Clicksign/DocuSign SDK, S3, Postgres.
+ Next.js (portal), Node.js/TS (trilhas/tarefas), Postgres, S3 (materiais), n8n (notificações).
 KPIs MVP
-Tempo de ciclo orçamento→assinatura; % assinados ≤ 7 dias; retrabalho evitado (#).
-4) Módulo 3 – OpsUnit Estoque Inteligente (MVP ~90 dias)
-Objetivo
- Visibilidade de insumos críticos (hotelaria/cozinha/eventos), alertas e prevenção de rupturas.
+≥ 80% sessões registradas no portal.
+NPS ≥ 70.
+Redução de 40% no tempo gasto em organização manual.
+4) Módulo 3 – BrandForge (Presença Digital) (MVP ~90 dias)
+Objetivos
+Criar autoridade digital com site institucional enxuto e CTAs de captação.
+Integrar leads direto ao CRM com tags de origem.
 Fluxos
-Cadastro & Curva ABC (import CSV, definir estoque mínimo).
-Movimentação Simples (entradas/saídas, lote/validade).
-Alertas quando atingir mínimo → sugestão de reposição (quantidade/fornecedor padrão).
+Landing page com formulário → CRM.
+Call-to-Action para WhatsApp com tracking.
+Biblioteca de conteúdos básicos para captação.
 Entregáveis
- Painel de níveis, itens a faltar, curva ABC, consumo/mês.
+Site 1.0 (institucional + formulário).
+Integração com CRM Vivo.
+Painel de leads por origem.
 Stack mínima
- Next.js, Node.js/TS, Postgres, n8n (alertas); opcional: leitura de código de barras via webcam.
+ Next.js, Postgres, API CRM, Meta Pixel.
 KPIs MVP
- Rupturas evitadas; itens abaixo do mínimo; giro itens “A”; custo mensal estimado.
-5) Módulo 4 – BrandForge: Funil Digital & Captação Segmentada (MVP ~90 dias)
-Objetivo
- Transformar o site de “outdoor” em motor de captação qualificada com landing pages por nicho (hospedagem, casamento, aniversário, corporativo) + integração ao CRM.
-Fluxos
-Landing Pages por nicho com formulários de pré-briefing.
-Qualificação automática → entra no pipeline com tags (nicho, data, orçamento).
-Agenda/Disponibilidade no site (consulta de datas).
-Entregáveis
- Biblioteca de templates; painel de conteúdos; integração de agendamento.
-Stack mínima
- Next.js, Node.js/TS, integração Meta/Buffer, Postgres.
-KPIs MVP
- Posts/semana, taxa de conclusão de pauta, engajamento básico; taxa de leads qualificados por LP.
-6) Dados & Modelo de Informação (mínimo)
-Entidades principais: Hóspede, Evento, Reserva, Espaço, Quarto, Pacote, Orçamento, Contrato, CentroCusto, Fatura, Lead, InteraçãoWhatsApp, Insumo, MovEstoque, Usuário, Perfil, AuditLog.
++30% leads inbound via site.
+≥ 90% leads com origem rastreada.
+5) Dados & Modelo de Informação (mínimo)
+Entidades principais: Lead, Cliente, Proposta, Contrato, Fatura, SessãoMentoria, Trilha, Tarefa, Usuário, Perfil, AuditLog.
  Padrões: UUID, timestamps, soft-delete, versionamento de templates, encrypt at rest (campos sensíveis), masking na UI.
-7) Segurança, LGPD e Governança
-Bases legais: execução de contrato & legítimo interesse (transparente).
-Perfis de acesso, 2FA opcional, TLS, backup diário + retenção 30 dias, logs WORM para contratos; consentimento/opt-out em WhatsApp.
-8) Deploy & Observability
+6) Segurança, LGPD e Governança
+Base legal: execução de contrato & legítimo interesse (transparente).
+Perfis de acesso (admin/consultor/financeiro).
+2FA opcional, TLS, backup diário + retenção 30 dias.
+Consentimento/opt-out em comunicações WhatsApp/E-mail.
+7) Deploy & Observability
 Infra: VPS 2–4 vCPU / 4–8 GB RAM; Docker; Nginx; Let’s Encrypt.
-CI/CD: GitHub Actions; Monitoramento: Uptime Kuma/Healthchecks; logs e métricas básicas.
-9) Roadmap para TimeOS (quando houver fit)
-SSO, Data Lake leve (Supabase + dbt), recomendações automatizadas (sazonalidade/ocupação), cockpit único (agenda, reservas, eventos, estoque, finanças) e comando via WhatsApp.
-10) Critérios de Aceite por Módulo (MVP)
-Financeiro+Agenda: overbooking = 0; ocupação confiável ≥ 99%; fechamento de caixa D+2; SLA confirmação < 15 min.
-CRM+Orçamentos/Contratos: ≥ 80% de propostas com resposta (sim/não) ≤ 7 dias; ≥ 90% contratos assinados ≤ 7 dias.
-Estoque: zero ruptura em itens “A”; alertas ≥ 48h antes do esgotamento.
-BrandForge/Funil: ≥ 3 posts/semana por 8 semanas; pauta aprovada ≤ 48h; conversão LP→lead qualificado com baseline a definir.
-Observações de aderência ao contexto da Quinta
-Disponibilidade no site e centralização da agenda são cruciais para reduzir retrabalho e evitar conflitos entre hospedagem e eventos.
-Segmentação por nicho (casamento, aniversários, corporativo) melhora a qualidade dos leads e reduz esforços de triagem.
-Preferência por sistema único em vez de coexistência com múltiplas soluções desconexas.
+CI/CD: GitHub Actions.
+Monitoramento: Uptime Kuma/Healthchecks; logs e métricas básicas.
+8) Roadmap para TimeOS (quando houver fit)
+Cockpit único integrando Comercial + Financeiro + Entrega.
+SSO, Data Lake leve (Supabase + dbt).
+Recomendações inteligentes (agenda, cobrança, upsell).
+Comando via WhatsApp para consultas rápidas.
+9) Critérios de Aceite por Módulo (MVP)
+Financeiro + CRM: 100% propostas → contrato → fatura; fechamento caixa D+2; inadimplência controlada.
+ Área do Cliente: ≥ 80% sessões registradas no portal; NPS ≥ 70.
+ BrandForge: ≥ 30% leads inbound pelo site; ≥ 90% origem rastreada.
+10) Observações de Aderência ao Contexto
+Eliminar cadastros dispersos (planilhas, WhatsApp).
+Substituir contratos/faturas manuais por fluxo digital integrado.
+Dar clareza de caixa e previsibilidade em tempo real.
+Oferecer experiência premium aos mentorados sem aumentar a sobrecarga da equipe.

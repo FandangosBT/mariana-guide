@@ -23,201 +23,204 @@ interface Step3IdentificarProps {
 }
 
 const BLUEPRINT = {
-  cliente: "Quinta do Brumado (Hospedagem + Eventos)",
+  cliente: "Larissa Carvalho – Business Growth (Mentorias Premium)",
   consultoria: "Q7 Ops",
-  objetivo: "Entregar um blueprint enxuto, validável em 90 dias por módulo, com baixo risco e alto impacto, evolutivo para TimeOS.",
+  objetivo:
+    "Entregar um blueprint enxuto, validável em campo em ~90 dias por módulo, com foco em baixo risco, alto impacto e evolução natural para TimeOS.",
   principios: ["Leve", "Modular", "Integrável", "Reversível"],
   camadas: {
-    interface: "Interface & Painéis – Next.js/React + Tailwind (dashboards e formulários: agenda, reservas, eventos, orçamentos/contratos, estoque, financeiro)",
-    orquestracao: "Orquestração & Agentes – n8n/Make/Zapier (MVP) + Workers Node.js/TS para lógicas críticas",
-    integracoes: "Integrações – WhatsApp (Meta Cloud), E‑signature (Clicksign/DocuSign), E‑mail/Calendar (Google), Planilhas (Sheets)",
-    dados: "Dados – PostgreSQL + Redis (filas/cache) + Storage S3/Backblaze (documentos)",
-    seguranca: "Segurança & LGPD – Auth.js, perfis (admin/atendimento/financeiro), auditoria, retenção, consentimento",
-    deploy: "Deploy – Docker + docker‑compose em VPS (Hetzner/OCI/Linode) com backups diários",
+    interface:
+      "Interface & Painéis (Web App) – Next.js/React + Tailwind → dashboards e formulários (leads, pipeline, contratos, faturas, portal de clientes)",
+    orquestracao:
+      "Orquestração & Agentes – n8n/Make/Zapier (MVP) para fluxos simples; workers em Node.js/TS para lógicas críticas",
+    integracoes:
+      "Integrações – WhatsApp (Meta Cloud API), Assinatura eletrônica (Clicksign/DocuSign), Gateway de Pagamentos (Asaas, Pagar.me), Google Calendar; planilhas apenas no MVP quando necessário",
+    dados: "Dados – PostgreSQL + Redis (filas/cache) + Storage (S3/Backblaze)",
+    seguranca:
+      "Segurança & LGPD – Auth.js, perfis (admin/consultor/financeiro), trilhas de auditoria, retenção/consentimento",
+    deploy: "Deploy – Docker em VPS com backups diários",
   },
   conexao: {
     a: [
-      "Cenário A (API disponível): ler/escrever reservas, eventos, hóspedes e finanças",
+      "Cenário A (APIs nativas): WhatsApp Cloud, Clicksign/DocuSign, Gateway de Pagamentos, Google Calendar",
     ],
     b: [
-      "Cenário B (sem API): ingestão por CSV/planilha diária",
-      "ICS/iCal para calendário e disponibilidade",
-      "Se imprescindível: RPA leve (Puppeteer) para extrair dados",
+      "Cenário B (sem API): ingestão CSV/planilha no MVP",
+      "Automação leve via n8n/Make",
+      "Calendário via ICS/iCal quando necessário",
     ],
   },
 };
 
 const MODULES: ModuleItem[] = [
   {
-    id: "financeiro_agenda",
-    title: "OpsUnit Financeiro Vivo + Agenda Integrada (MVP ~90 dias)",
-    objetivo: "Dar visibilidade AP/AR por centro de custo e unificar calendário (hospedagem + eventos) com anti-overbooking.",
+    id: "financeiro_crm",
+    title: "OpsUnit Financeiro Vivo + CRM Vivo (MVP ~90 dias)",
+    objetivo:
+      "Unificar leads e clientes; integrar proposta → contrato → fatura com baixa automática; garantir previsibilidade de caixa e dashboards em tempo real.",
     fluxos: [
-      { id: "A", title: "Conciliação de Receitas", bullets: [
-        "OTAs (import/transacional), reservas diretas (site), eventos (orçamento aprovado → fatura)",
+      { id: "A", title: "Pipeline de Leads", bullets: [
+        "Lead captado (site, bio IG, WhatsApp) → pipeline CRM",
       ]},
-      { id: "B", title: "Agenda Única", bullets: [
-        "Leitura/gravação em calendário interno",
-        "Ingestão ICS/iCal de canais externos",
-        "Bloqueios por eventos (montagem/limpeza)",
+      { id: "B", title: "Proposta → Contrato → Fatura", bullets: [
+        "Proposta digital vinculada ao card → contrato assinado online → fatura emitida",
       ]},
-      { id: "C", title: "Anti-Overbooking", bullets: [
-        "Checagem de conflito (espaço/quarto/data) ao criar reserva/evento",
-        "Sugestão de janela alternativa",
+      { id: "C", title: "Conciliação de Recebíveis", bullets: [
+        "Cartão, Pix, boleto com baixa automática",
       ]},
       { id: "D", title: "Alertas", bullets: [
-        "Pagamentos a vencer, saldo em aberto por evento, datas críticas",
+        "Inadimplência e vencimentos (WhatsApp/E-mail)",
       ]},
     ],
     entregaveis: [
-      "Painel Financeiro (DRE simplificado, AP/AR, centros de custo)",
-      "Painel Agenda/Disponibilidade (ocupação por data/área/quarto, bloqueios de evento)",
-      "Conectores: OTAs (iCal), Google Calendar, export CSV",
-      "Stack mínima: Next.js, Node.js/TS, n8n, Postgres, Redis, Meta WhatsApp Cloud API, Auth.js",
-      "KPIs MVP: Overbooking = 0; acurácia de ocupação ≥ 99%; fechamento de caixa D+2; SLA confirmação < 15 min",
+      "Painel Financeiro (AP/AR, fluxo de caixa, inadimplência)",
+      "Painel Comercial (pipeline, conversão, ticket médio)",
+      "Integrações: WhatsApp Cloud, Clicksign/DocuSign, gateway de pagamentos",
     ],
-    stackMinima: [],
-    kpis: [],
-    tags: ["financeiro", "agenda", "otas", "ical", "overbooking"],
+    stackMinima: [
+      "Next.js (painéis)",
+      "Node.js/TS (serviços)",
+      "n8n (gatilhos)",
+      "Postgres",
+      "Redis",
+      "Clicksign",
+      "Gateway pagamentos",
+    ],
+    kpis: [
+      "100% propostas → contrato → fatura",
+      "Fechamento de caixa em D+2",
+      "+20% taxa de conversão",
+      "Inadimplência monitorada em D+7/D+30",
+    ],
+    tags: ["financeiro", "crm", "contratos", "faturas", "whatsapp"],
   },
   {
-    id: "crm_orcamentos_contratos",
-    title: "CRM Vivo + Orçamentos & Contratos Digitais (MVP ~90 dias)",
-    objetivo: "Padronizar a qualificação de leads por nicho e acelerar orçamentos e assinaturas digitais.",
+    id: "area_cliente",
+    title: "Área do Cliente (Mentoria Premium) (MVP ~90 dias)",
+    objetivo:
+      "Portal exclusivo para mentorados com clareza de agenda, trilhas, entregáveis e checkpoints; tirar operação do WhatsApp e criar experiência premium escalável.",
     fluxos: [
-      { id: "A", title: "Orçamento Guiado", bullets: [
-        "Formulário por nicho → cálculo automático de pacotes/itens → PDF/HTML",
+      { id: "A", title: "Onboarding", bullets: [
+        "Automático após pagamento",
       ]},
-      { id: "B", title: "Assinatura Eletrônica", bullets: [
-        "Envio para Clicksign/DocuSign",
-        "Webhook de retorno atualiza status",
+      { id: "B", title: "Gestão da Mentoria", bullets: [
+        "Upload de materiais, agenda de sessões, registro de tarefas/conclusões",
       ]},
-      { id: "C", title: "Arquivamento & Auditoria", bullets: [
-        "PDF em S3; hash, data, IP, versão do template; vínculo ao evento/reserva",
+      { id: "C", title: "Feedback/NPS", bullets: [
+        "NPS/feedback pós-sessão direto no portal",
       ]},
     ],
     entregaveis: [
-      "Painel de Leads/Propostas/Contratos (pendente, enviado, assinado, expirado)",
-      "Templates versionados por nicho",
-      "Integração com assinatura + webhooks",
-      "Stack mínima: Next.js, Node.js/TS (template engine), Clicksign/DocuSign SDK, S3, Postgres",
-      "KPIs MVP: Tempo de ciclo orçamento→assinatura; % assinados ≤ 7 dias; retrabalho evitado (#)",
+      "Portal web por cliente (acesso individual)",
+      "Trilhas digitais de mentoria com progresso",
+      "Checklists e tarefas vinculadas",
     ],
-    stackMinima: [],
-    kpis: [],
-    tags: ["crm", "orcamentos", "contratos", "assinatura", "s3"],
-  },
-  {
-    id: "estoque_inteligente",
-    title: "OpsUnit Estoque Inteligente (MVP ~90 dias)",
-    objetivo: "Visibilidade de insumos críticos (hotelaria/cozinha/eventos), alertas e prevenção de rupturas.",
-    fluxos: [
-      { id: "A", title: "Cadastro & Curva ABC", bullets: [
-        "Importação inicial (CSV/planilha)",
-        "Definição de estoque mínimo por item",
-      ]},
-      { id: "B", title: "Movimentação Simples", bullets: [
-        "Entradas/saídas, lote/validade",
-      ]},
-      { id: "C", title: "Alertas", bullets: [
-        "Atingiu mínimo → WhatsApp/E‑mail com sugestão de reposição",
-      ]},
+    stackMinima: [
+      "Next.js (portal)",
+      "Node.js/TS (trilhas/tarefas)",
+      "Postgres",
+      "S3 (materiais)",
+      "n8n (notificações)",
     ],
-    entregaveis: [
-      "Painel de níveis, itens a faltar, curva ABC, consumo/mês",
-      "Importação CSV; trilha de auditoria",
-      "Stack mínima: Next.js, Node.js/TS, Postgres, n8n (alertas); opcional: leitura de código de barras via webcam",
-      "KPIs MVP: Rupturas evitadas; itens abaixo do mínimo; giro itens A; custo mensal estimado",
+    kpis: [
+      "≥ 80% sessões registradas no portal",
+      "NPS ≥ 70",
+      "-40% tempo em organização manual",
     ],
-    stackMinima: [],
-    kpis: [],
-    tags: ["estoque", "hotelaria", "eventos", "curva_abc"],
+    tags: ["mentoria", "portal", "nps", "trilhas"],
   },
   {
     id: "brandforge",
-    title: "BrandForge: Funil Digital & Captação Segmentada (MVP ~90 dias)",
-    objetivo: "Transformar o site em motor de captação qualificada com LPs por nicho + integração ao CRM.",
+    title: "BrandForge (Presença Digital) (MVP ~90 dias)",
+    objetivo:
+      "Criar autoridade digital com site institucional enxuto e CTAs de captação; integrar leads direto ao CRM com tags de origem.",
     fluxos: [
-      { id: "A", title: "Landing Pages por Nicho", bullets: [
-        "Formulários de pré-briefing por nicho (hospedagem, casamento, aniversário, corporativo)",
+      { id: "A", title: "LP → CRM", bullets: [
+        "Landing page com formulário → CRM",
       ]},
-      { id: "B", title: "Qualificação Automática", bullets: [
-        "Entra no pipeline com tags (nicho, data, orçamento)",
+      { id: "B", title: "CTA c/ Tracking", bullets: [
+        "Call‑to‑Action para WhatsApp com tracking",
       ]},
-      { id: "C", title: "Agenda/Disponibilidade no Site", bullets: [
-        "Consulta de datas e integração com Agenda",
+      { id: "C", title: "Conteúdos", bullets: [
+        "Biblioteca de conteúdos básicos para captação",
       ]},
     ],
     entregaveis: [
-      "Biblioteca de templates; painel de conteúdos; integração de agendamento",
-      "Stack mínima: Next.js, Node.js/TS, integração Meta/Buffer, Postgres",
-      "KPIs MVP: Posts/semana; conclusão de pauta; engajamento básico; taxa de leads qualificados por LP",
+      "Site 1.0 (institucional + formulário)",
+      "Integração com CRM Vivo",
+      "Painel de leads por origem",
     ],
-    stackMinima: [],
-    kpis: [],
-    tags: ["brandforge", "funil", "captacao", "lp", "crm"],
+    stackMinima: [
+      "Next.js",
+      "Postgres",
+      "API CRM",
+      "Meta Pixel",
+    ],
+    kpis: [
+      "+30% leads inbound via site",
+      "≥ 90% leads com origem rastreada",
+    ],
+    tags: ["presenca_digital", "lp", "crm", "pixel"],
   },
 ];
 
 const DATA_MODEL = {
   tabelas: [
-    "Hóspede",
-    "Evento",
-    "Reserva",
-    "Espaço",
-    "Quarto",
-    "Pacote",
-    "Orçamento",
-    "Contrato",
-    "CentroCusto",
-    "Fatura",
     "Lead",
-    "InteraçãoWhatsApp",
-    "Insumo",
-    "MovEstoque",
+    "Cliente",
+    "Proposta",
+    "Contrato",
+    "Fatura",
+    "SessãoMentoria",
+    "Trilha",
+    "Tarefa",
     "Usuário",
     "Perfil",
-    "AuditLog"
+    "AuditLog",
   ],
   rels: [
-    "Hóspede 1‑N Reserva/Evento/Contrato",
-    "Espaço/Quarto 1‑N Reserva/Evento",
-    "Insumo 1‑N MovEstoque"
+    "Cliente 1‑N Proposta/Contrato/Fatura/SessãoMentoria",
+    "Trilha 1‑N Tarefa",
   ],
   padroes: [
     "UUID",
     "timestamps",
     "soft‑delete",
-    "versionamento de template",
+    "versionamento de templates",
     "encrypt at rest (campos sensíveis)",
-    "masking em UI"
+    "masking na UI",
   ],
 };
 
 const SECURITY = {
   bases: ["Execução de contrato", "Legítimo interesse (transparência)"],
-  controles: ["Perfis de acesso (admin/atendimento/financeiro)", "2FA opcional", "TLS", "Backup diário + retenção 30 dias", "Logs imutáveis (WORM) para contratos"],
-  privacidade: ["Consentimento explícito para WhatsApp", "Opt‑out fácil"],
+  controles: [
+    "Perfis de acesso (admin/consultor/financeiro)",
+    "2FA opcional",
+    "TLS",
+    "Backup diário + retenção 30 dias",
+    "Logs imutáveis (WORM) para contratos",
+  ],
+  privacidade: ["Consentimento/opt‑out em comunicações WhatsApp/E‑mail"],
 };
 
 const DEPLOY = {
-  infra: ["VPS 2–4 vCPU / 4–8GB RAM", "Docker", "Nginx reverse proxy", "Let’s Encrypt"],
-  cicd: ["GitHub Actions → build e deploy"],
-  observability: ["Uptime Kuma/Healthchecks", "Winston + (Loki opcional)", "Métricas básicas"],
+  infra: ["VPS 2–4 vCPU / 4–8 GB RAM", "Docker", "Nginx", "Let’s Encrypt"],
+  cicd: ["GitHub Actions"],
+  observability: ["Uptime Kuma/Healthchecks", "Logs e métricas básicas"],
 };
 
 const ROADMAP = [
-  "SSO (unificação de identidades e permissões)",
-  "Data Lake leve (Supabase + dbt)",
-  "Recomendações automatizadas (sazonalidade/ocupação)",
-  "Cockpit único (agenda, reservas, eventos, estoque, finanças)",
+  "Cockpit único integrando Comercial + Financeiro + Entrega",
+  "SSO, Data Lake leve (Supabase + dbt)",
+  "Recomendações inteligentes (agenda, cobrança, upsell)",
+  "Comando via WhatsApp para consultas rápidas",
 ];
 
 const CRITERIA = [
-  "Financeiro+Agenda: overbooking = 0; ocupação confiável ≥ 99%; fechamento de caixa D+2; SLA confirmação < 15 min",
-  "CRM+Orçamentos/Contratos: ≥ 80% de propostas com resposta ≤ 7 dias; ≥ 90% contratos assinados ≤ 7 dias",
-  "Estoque: zero ruptura em itens ‘A’; alertas ≥ 48h antes do esgotamento",
-  "BrandForge/Funil: ≥ 3 posts/semana por 8 semanas; pauta aprovada ≤ 48h; conversão LP→lead qualificado (baseline a definir)",
+  "Financeiro + CRM: 100% propostas → contrato → fatura; fechamento de caixa D+2; inadimplência controlada",
+  "Área do Cliente: ≥ 80% sessões registradas no portal; NPS ≥ 70",
+  "BrandForge: ≥ 30% leads inbound pelo site; ≥ 90% origem rastreada",
 ];
 
 export const Step3Identificar = ({ onNext, sessionId }: Step3IdentificarProps) => {
@@ -225,7 +228,14 @@ export const Step3Identificar = ({ onNext, sessionId }: Step3IdentificarProps) =
   const favoritesRef = useRef<Record<string, boolean>>({});
   const flippedRef = useRef<Record<string, number>>({});
 
-  const categories = useMemo(() => ["Financeiro", "Agenda", "Comercial/CRM", "Marketing", "Estoque", "Dados"], []);
+  const categories = useMemo(() => [
+    "Financeiro",
+    "CRM",
+    "Mentoria",
+    "Presença Digital",
+    "Dados",
+    "Governança",
+  ], []);
 
   const toggleFavorite = (id: string) => {
     favoritesRef.current[id] = !favoritesRef.current[id];
@@ -268,7 +278,7 @@ export const Step3Identificar = ({ onNext, sessionId }: Step3IdentificarProps) =
             IDENTIFICAR
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Arquitetura leve + módulos MVP integráveis aos sistemas atuais da Quinta (hospedagem e eventos).
+            Arquitetura leve + módulos MVP integráveis aos sistemas atuais da operação de mentorias premium.
           </p>
         </header>
 
@@ -293,7 +303,7 @@ export const Step3Identificar = ({ onNext, sessionId }: Step3IdentificarProps) =
             <div className="flex flex-wrap gap-2 mb-4">
               <Badge variant="secondary" className="bg-step-3/10 text-step-3">Cliente: {BLUEPRINT.cliente}</Badge>
               <Badge variant="secondary" className="bg-step-3/10 text-step-3">Consultoria: {BLUEPRINT.consultoria}</Badge>
-              <Badge variant="secondary" className="bg-step-3/10 text-step-3">Objetivo: 90 dias/módulo</Badge>
+              <Badge variant="secondary" className="bg-step-3/10 text-step-3">Objetivo: ~90 dias/módulo</Badge>
             </div>
             <p className="text-sm text-muted-foreground mb-4">{BLUEPRINT.objetivo}</p>
 
@@ -316,14 +326,14 @@ export const Step3Identificar = ({ onNext, sessionId }: Step3IdentificarProps) =
               <div>
                 <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                   <Database className="w-4 h-4 text-step-3" />
-                  Conexão com os sistemas atuais da Quinta
+                  Conexão com sistemas atuais
                 </h3>
 
                 {/* Cenário A */}
                 <div className="mb-4 p-4 rounded-xl border-2 border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-900/20">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <div className="text-sm font-semibold text-green-700 dark:text-green-400">Cenário A: API Disponível</div>
+                    <div className="text-sm font-semibold text-green-700 dark:text-green-400">Cenário A: APIs nativas</div>
                   </div>
                   <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-2">
                     {BLUEPRINT.conexao.a.map((c) => (
@@ -366,35 +376,35 @@ export const Step3Identificar = ({ onNext, sessionId }: Step3IdentificarProps) =
         <Card className="step-card bg-card/60 supports-[backdrop-filter]:backdrop-blur border border-border/60 rounded-2xl shadow-sm hover:shadow-elegant transition-all duration-300 mb-10">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2"><FileText className="w-5 h-5 text-step-3" /> Integração por Módulo</CardTitle>
-            <CardDescription>Como cada solução se conecta aos sistemas atuais da Quinta</CardDescription>
+            <CardDescription>Como cada solução se conecta aos sistemas atuais</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                  <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">Financeiro + Agenda Integrada</h4>
+                  <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">Financeiro + CRM Vivo</h4>
                   <p className="text-sm text-muted-foreground">
-                    Concilia receitas (OTAs, reservas diretas, eventos) e unifica calendário (hospedagem + eventos) com iCal/Google Calendar; anti-overbooking.
+                    Proposta → contrato → fatura; conciliação com baixa automática; alertas de inadimplência.
                   </p>
                 </div>
                 <div className="p-3 rounded-lg bg-purple-50/50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
-                  <h4 className="text-sm font-semibold text-purple-700 dark:text-purple-400 mb-2">Contratos Digitais</h4>
+                  <h4 className="text-sm font-semibold text-purple-700 dark:text-purple-400 mb-2">Área do Cliente</h4>
                   <p className="text-sm text-muted-foreground">
-                    Recebe dados do hóspede/cliente do CRM/Agenda para geração automática de contratos
+                    Onboarding após pagamento; sessões, trilhas e tarefas integradas ao CRM.
                   </p>
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="p-3 rounded-lg bg-orange-50/50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
-                  <h4 className="text-sm font-semibold text-orange-700 dark:text-orange-400 mb-2">Estoque Inteligente</h4>
+                <div className="p-3 rounded-lg bg-pink-50/50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
+                  <h4 className="text-sm font-semibold text-pink-700 dark:text-pink-400 mb-2">BrandForge (Presença Digital)</h4>
                   <p className="text-sm text-muted-foreground">
-                    Importa movimentações de estoque via CSV ou integração direta com sistema atual
+                    LP → CRM com origem; CTA WhatsApp com tracking; painel por origem.
                   </p>
                 </div>
-                <div className="p-3 rounded-lg bg-pink-50/50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
-                  <h4 className="text-sm font-semibold text-pink-700 dark:text-pink-400 mb-2">BrandForge</h4>
+                <div className="p-3 rounded-lg bg-orange-50/50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+                  <h4 className="text-sm font-semibold text-orange-700 dark:text-orange-400 mb-2">Integrações & Pagamentos</h4>
                   <p className="text-sm text-muted-foreground">
-                    Recebe dados de hóspedes/clientes para personalização de conteúdo e lembretes automáticos
+                    WhatsApp Cloud, Clicksign/DocuSign, Google Calendar e gateways (Asaas/Pagar.me).
                   </p>
                 </div>
               </div>
@@ -593,7 +603,7 @@ export const Step3Identificar = ({ onNext, sessionId }: Step3IdentificarProps) =
         {/* Ações */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
           <Badge variant="secondary" className="bg-step-3/10 text-step-3">Cliente: {BLUEPRINT.cliente}</Badge>
-          <Badge variant="secondary" className="bg-step-3/10 text-step-3">Data: Agosto/2025</Badge>
+          <Badge variant="secondary" className="bg-step-3/10 text-step-3">Data: Setembro/2025</Badge>
           <Badge variant="secondary" className="bg-step-3/10 text-step-3">Consultoria: {BLUEPRINT.consultoria}</Badge>
 
         </div>

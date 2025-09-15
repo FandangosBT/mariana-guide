@@ -13,12 +13,18 @@ interface Step2ProcessarProps {
 }
 
 const META = {
-  lead: "Quinta de Brumado (Hospedagem + Eventos)",
+  lead: "Larissa Carvalho Business Growth",
   data: "Setembro/2025",
   consultoria: "Q7 Ops",
 };
 
-type CategoryId = "financeiro" | "agenda" | "orcamentos" | "estoque" | "captacao" | "comunicacao";
+type CategoryId =
+  | "financeiro"
+  | "gestaoClientesLeads"
+  | "contratosServicos"
+  | "areaClienteMentoria"
+  | "kpisOperacao"
+  | "presencaDigital";
 
 const CATEGORIES: Array<{
   id: CategoryId;
@@ -32,89 +38,86 @@ const CATEGORIES: Array<{
   {
     id: "financeiro",
     icon: FileText,
-    title: "Financeiro & Gestão de Custos",
+    title: "Financeiro & Fluxo de Caixa",
     bullets: [
-      "Controle realizado em Excel, paralelo ao sistema atual.",
-      "Relatórios financeiros confusos, sem visão consolidada.",
-      "Dificuldade em prever fluxo de caixa e rentabilidade de eventos.",
-      "Alto risco de erro nos cálculos (orçamentos refeitos várias vezes).",
+      "Controle em planilhas manuais, sem dashboards consolidados.",
+      "Orçamentos refeitos várias vezes, sem padronização.",
+      "Ausência de relatórios automáticos de contas a pagar/receber.",
     ],
     impacto:
-      "Perda de clareza sobre custos reais, risco de decisões equivocadas e insegurança nos investimentos.",
+      "Falta de previsibilidade financeira, insegurança em investimentos e risco de erro nos cálculos.",
     impactoScore: 95,
-    esforcoScore: 50,
-  },
-  {
-    id: "agenda",
-    icon: CalendarDays,
-    title: "Agenda & Disponibilidade",
-    bullets: [
-      "Agenda da hospedagem controlada manualmente no Google Calendar.",
-      "Plataformas externas (Booking/OTAs) não integradas.",
-      "Risco de overbooking entre reservas de hospedagem e eventos.",
-      "Ausência de um calendário unificado acessível a todos os administradores.",
-    ],
-    impacto:
-      "Perda de credibilidade com clientes, retrabalho e desgaste operacional.",
-    impactoScore: 85,
     esforcoScore: 45,
   },
   {
-    id: "orcamentos",
-    icon: FileSignature,
-    title: "Orçamentos & Propostas",
+    id: "gestaoClientesLeads",
+    icon: MessageSquare,
+    title: "Gestão de Clientes & Leads",
     bullets: [
-      "Orçamentos personalizados feitos manualmente, sem padronização.",
-      "Alto tempo gasto para calcular valores → risco de inconsistência.",
-      "Follow-up improvisado, sem CRM ou histórico organizado.",
+      "Cadastros dispersos (WhatsApp, planilhas, anotações).",
+      "Sem pipeline organizado para leads.",
+      "Gestão de senhas e acessos feita de forma improvisada.",
     ],
     impacto:
-      "Lentidão no fechamento de contratos, perda de oportunidades e desgaste dos administradores.",
-    impactoScore: 80,
-    esforcoScore: 60,
+      "Perda de oportunidades, retrabalho e baixa escalabilidade.",
+    impactoScore: 85,
+    esforcoScore: 50,
   },
   {
-    id: "estoque",
-    icon: Package,
-    title: "Estoque & Insumos",
+    id: "contratosServicos",
+    icon: FileSignature,
+    title: "Contratos & Serviços",
     bullets: [
-      "Controle manual em planilhas/anotações.",
-      "Sem alertas automáticos de validade ou reposição.",
-      "Compras emergenciais frequentes, aumentando custos.",
+      "Contratos assinados manualmente, sem centralização.",
+      "Serviços contratados não ficam visíveis em um painel único.",
+      "Gestão de faturas sem automação.",
     ],
     impacto:
-      "Interrupções de operação, desperdício financeiro e falta de previsibilidade em insumos críticos.",
-    impactoScore: 70,
+      "Atraso em fechamentos, riscos jurídicos e falhas na entrega.",
+    impactoScore: 80,
     esforcoScore: 55,
   },
   {
-    id: "captacao",
-    icon: Megaphone,
-    title: "Captação de Leads & Marketing",
+    id: "areaClienteMentoria",
+    icon: Package,
+    title: "Área de Clientes & Entrega da Mentoria",
     bullets: [
-      "Site atual funciona apenas como “outdoor digital”.",
-      "Leads chegam pelo WhatsApp sem qualificação prévia.",
-      "Grande volume de contatos manuais (ex.: 350 noivas para ligar).",
-      "Falta de segmentação (casamento, hospedagem, eventos corporativos).",
+      "Entrega da mentoria premium feita via WhatsApp.",
+      "Ausência de portal exclusivo para clientes.",
+      "Materiais e documentos compartilhados de forma improvisada.",
     ],
     impacto:
-      "Perda de tempo em triagem manual, contatos esquecidos e baixa previsibilidade de conversão.",
-    impactoScore: 75,
-    esforcoScore: 65,
+      "Percepção de falta de profissionalismo, risco de perda de informações e dificuldade em escalar mentorias.",
+    impactoScore: 88,
+    esforcoScore: 50,
   },
   {
-    id: "comunicacao",
-    icon: MessageSquare,
-    title: "Comunicação & Atendimento",
+    id: "kpisOperacao",
+    icon: Megaphone,
+    title: "KPIs de Campanhas & Operação",
     bullets: [
-      "Hospedagem aceita automação, mas eventos exigem personalização total.",
-      "Falta de integração entre canais (site, WhatsApp, redes sociais).",
-      "Administradores sobrecarregados com atendimento manual.",
+      "Indicadores acompanhados manualmente.",
+      "Sem dashboards integrados para visão em tempo real.",
+      "Baixa previsibilidade dos resultados de marketing.",
     ],
     impacto:
-      "Ineficiência no relacionamento com clientes, perda de escalabilidade e risco de experiências negativas.",
+      "Decisões baseadas em achismo, pouca clareza sobre ROI e risco de campanhas ineficientes.",
     impactoScore: 78,
     esforcoScore: 60,
+  },
+  {
+    id: "presencaDigital",
+    icon: CalendarDays,
+    title: "Presença Digital Institucional",
+    bullets: [
+      "Agência não possui página institucional.",
+      "Presença digital fragmentada.",
+      "Dificuldade de transmitir autoridade a novos clientes.",
+    ],
+    impacto:
+      "Barreiras para prospectar e redução de credibilidade.",
+    impactoScore: 75,
+    esforcoScore: 35,
   },
 ];
 
@@ -122,12 +125,12 @@ const CATEGORIES: Array<{
 
 // Conexões entre categorias correlatas
 const RELATED: Record<CategoryId, CategoryId[]> = {
-  financeiro: ["agenda", "orcamentos"],
-  agenda: ["orcamentos", "comunicacao", "estoque"],
-  orcamentos: ["comunicacao", "captacao", "financeiro"],
-  estoque: ["agenda"],
-  captacao: ["comunicacao", "orcamentos"],
-  comunicacao: ["agenda", "captacao", "orcamentos"],
+  financeiro: ["contratosServicos", "kpisOperacao"],
+  gestaoClientesLeads: ["presencaDigital", "areaClienteMentoria", "contratosServicos"],
+  contratosServicos: ["financeiro", "gestaoClientesLeads", "areaClienteMentoria"],
+  areaClienteMentoria: ["gestaoClientesLeads", "contratosServicos", "presencaDigital"],
+  kpisOperacao: ["presencaDigital", "financeiro"],
+  presencaDigital: ["gestaoClientesLeads", "kpisOperacao", "areaClienteMentoria"],
 };
 
 
@@ -153,8 +156,8 @@ export const Step2Processar = ({ onNext, sessionId }: Step2ProcessarProps) => {
     }
     // Criar link para download do arquivo PDF
     const link = document.createElement('a');
-    link.href = '/Mapa-de-Gargalos-Invisiveis-Quinta-de-Brumado.pdf';
-    link.download = 'Mapa-de-Gargalos-Invisiveis-Quinta-de-Brumado.pdf';
+    link.href = '/Mapa-de-Gargalos-Invisiveis-Larissa-Carvalho-Business-Growth.pdf';
+    link.download = 'Mapa-de-Gargalos-Invisiveis-Larissa-Carvalho-Business-Growth.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -187,9 +190,6 @@ export const Step2Processar = ({ onNext, sessionId }: Step2ProcessarProps) => {
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Mapa de Gargalos Invisíveis — onde a operação perde eficiência sem você perceber.
           </p>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            📌 Mapa de Gargalos Invisíveis – Quinta de Brumado
-          </p>
         </header>
 
         {/* Meta + Ações */}
@@ -206,7 +206,7 @@ export const Step2Processar = ({ onNext, sessionId }: Step2ProcessarProps) => {
         <div className="max-w-4xl mx-auto mb-6">
           <Card className="step-card step-2">
             <CardContent className="pt-6 text-muted-foreground leading-relaxed">
-              A Quinta possui estrutura física diferenciada e grande potencial de crescimento em hospedagem e eventos. Porém, a operação depende de processos manuais e sistemas fragmentados. Durante a conversa, emergiram gargalos não imediatamente visíveis, mas que comprometem eficiência, previsibilidade e escala sustentável.
+              A agência possui grande potencial de crescimento, mas a operação depende de processos manuais, informações dispersas e ausência de infraestrutura digital mínima. Durante a conversa, emergiram gargalos não imediatamente visíveis, mas que comprometem eficiência, previsibilidade e escala.
             </CardContent>
           </Card>
         </div>
@@ -339,13 +339,13 @@ export const Step2Processar = ({ onNext, sessionId }: Step2ProcessarProps) => {
             </CardHeader>
             <CardContent className="text-muted-foreground leading-relaxed">
               <p className="mb-4">
-                A Quinta de Brumado está presa em uma rotina de retrabalho manual, duplicidade de processos e baixa previsibilidade financeira. Os gargalos invisíveis afetam diretamente a experiência dos clientes e a capacidade de crescimento sustentável.
+                A agência está presa em rotinas manuais, duplicidade de processos e falta de clareza estratégica. Esses gargalos invisíveis afetam diretamente a credibilidade, a eficiência operacional e a capacidade de escalar clientes e mentorias.
               </p>
               <ul className="space-y-2">
-                <li>• Passo inicial: OpsUnit – Financeiro Vivo + Agenda Integrada (impacto imediato, reduz risco de erro e dá clareza financeira).</li>
-                <li>• Expansão natural: Orçamentos & Contratos Digitais + CRM Vivo (mais previsibilidade comercial).</li>
-                <li>• Médio prazo: Estoque Inteligente e Funil Digital (eficiência operacional + captação qualificada).</li>
-                <li>• Longo prazo: TimeOS (integração total, inteligência de mercado e gestão via WhatsApp).</li>
+                <li>• Passo inicial: BrandForge (site institucional + CRM básico) + OpsUnit – Financeiro Vivo (impacto imediato, organização de clientes e previsibilidade financeira).</li>
+                <li>• Expansão natural: Área do Cliente Premium + KPIs Automatizados (profissionalização da entrega e clareza em resultados).</li>
+                <li>• Médio prazo: Contratos Digitais Integrados + Funil de Leads (eficiência comercial + menos retrabalho).</li>
+                <li>• Longo prazo: TimeOS (painel centralizado para controle total da operação).</li>
               </ul>
             </CardContent>
           </Card>
