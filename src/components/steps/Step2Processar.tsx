@@ -13,7 +13,7 @@ interface Step2ProcessarProps {
 }
 
 const META = {
-  lead: "Larissa Carvalho Business Growth",
+  lead: "Proposta Demo Mentorias Premium",
   data: "Setembro/2025",
   consultoria: "Q7 Ops",
 };
@@ -156,8 +156,8 @@ export const Step2Processar = ({ onNext, sessionId }: Step2ProcessarProps) => {
     }
     // Criar link para download do arquivo PDF
     const link = document.createElement('a');
-    link.href = '/Mapa-de-Gargalos-Invisiveis-Larissa-Carvalho-Business-Growth.pdf';
-    link.download = 'Mapa-de-Gargalos-Invisiveis-Larissa-Carvalho-Business-Growth.pdf';
+    link.href = '/Mapa-de-Gargalos-Invisiveis-Demo.pdf';
+    link.download = 'Mapa-de-Gargalos-Invisiveis-Demo.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -23,7 +23,7 @@ interface Step3IdentificarProps {
 }
 
 const BLUEPRINT = {
-  cliente: "Larissa Carvalho – Business Growth (Mentorias Premium)",
+  cliente: "Proposta Demo – Mentorias Premium",
   consultoria: "Q7 Ops",
   objetivo:
     "Entregar um blueprint enxuto, validável em campo em ~90 dias por módulo, com foco em baixo risco, alto impacto e evolução natural para TimeOS.",

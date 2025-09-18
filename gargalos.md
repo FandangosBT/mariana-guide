@@ -1,5 +1,5 @@
-Mapa de Gargalos Invisíveis – Larissa Cardoso Business Growth 
-Lead: Larissa Cardoso Business Growth
+Mapa de Gargalos Invisíveis – Proposta Demo Mentorias Premium 
+Lead: Proposta Demo Mentorias Premium
 Data: Setembro/2025
 Consultoria: Q7 Ops
 A agência possui grande potencial de crescimento, mas a operação depende de processos manuais, informações dispersas e ausência de infraestrutura digital mínima. Durante a conversa, emergiram gargalos não imediatamente visíveis, mas que comprometem eficiência, previsibilidade e escala.

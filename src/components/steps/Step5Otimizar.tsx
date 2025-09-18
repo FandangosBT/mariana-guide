@@ -476,6 +476,12 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                 <CardDescription className="text-blue-100/70 text-lg mb-6">
                   Selecione os módulos que fazem sentido para sua operação e veja o ROI em tempo real
                 </CardDescription>
+                <div className="mt-4 inline-flex items-start gap-3 px-4 py-3 bg-amber-500/15 border border-amber-300/40 rounded-xl text-left">
+                  <Sparkles className="w-4 h-4 text-amber-300 mt-0.5" aria-hidden="true" />
+                  <p className="text-sm text-amber-100 font-medium">
+                    Todos os valores exibidos aqui são ilustrativos. Este aplicativo é uma demonstração da consultoria e não representa proposta comercial real.
+                  </p>
+                </div>
 
                 {/* Modelo de Precificação: somente licença permanente */}
 

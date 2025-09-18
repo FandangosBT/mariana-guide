@@ -12,7 +12,7 @@ interface Step1EscutarProps {
 }
 
 const scannerData = {
-  cliente: "Larissa Carvalho Business Growth",
+  cliente: "Proposta Demo – Mentorias Premium",
   data: "Setembro/2025",
   consultoria: "Q7 Ops",
   contextoGeral:
@@ -93,8 +93,8 @@ export const Step1Escutar = ({ onNext, sessionId }: Step1EscutarProps) => {
     }
     // Criar link para download do arquivo PDF
     const link = document.createElement('a');
-    link.href = '/Scanner-Operacional-EPICO-Larissa-Carvalho-Business-Growth.pdf';
-    link.download = 'Scanner-Operacional-EPICO-Larissa-Carvalho-Business-Growth.pdf';
+    link.href = '/Scanner-Operacional-EPICO-Demo.pdf';
+    link.download = 'Scanner-Operacional-EPICO-Demo.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -102,7 +102,7 @@ export const Step1Escutar = ({ onNext, sessionId }: Step1EscutarProps) => {
 
   const handleNext = () => {
     if (sessionId) {
-      trackStepComplete(sessionId, "Escutar", { scannerPreset: "LarissaCardosoBusinessGrowth" });
+      trackStepComplete(sessionId, "Escutar", { scannerPreset: "DemoConsultingJourney" });
     }
     onNext();
   };

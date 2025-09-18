@@ -1,5 +1,5 @@
-Scanner Operacional ÉPICO – Larissa Cardoso Business Growth
-Cliente: Larissa Cardoso Business Growth
+Scanner Operacional ÉPICO – Proposta Demo Mentorias Premium 
+Cliente: Proposta Demo Mentorias Premium
 Data: Setembro/2025 
 Consultoria: Q7 Ops
 1. Contexto Geral

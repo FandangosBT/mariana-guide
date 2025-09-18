@@ -1,5 +1,5 @@
 Mockup – Arquitetura Leve + Stack de Automação Mínima
-Cliente: Larissa Carvalho – Business Growth (Mentorias Premium)
+Cliente: Proposta Demo – Mentorias Premium
  Consultoria: Q7 Ops
  Objetivo: entregar um blueprint enxuto, validável em campo em ~90 dias por módulo, com foco em baixo risco, alto impacto e evolução natural para TimeOS.
 1) Visão Geral da Arquitetura
