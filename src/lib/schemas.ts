@@ -15,7 +15,8 @@ export const SessionEndSchema = z.object({
 
 export const EventPayloadSchema = z.object({
   sessionId: z.string().uuid(),
-  step: z.enum(["Escutar", "Processar", "Identificar", "Criar", "Otimizar", "Geral"]).default("Geral"),
+  // Aceita passos antigos e novos (compatibilidade retroativa)
+  step: z.enum(["Escutar", "Processar", "Identificar", "Criar", "Otimizar", "Geral", "Atual", "Desejada"]).default("Geral"),
   action: z.string().min(1).max(64),
   metadata: z.record(z.any()).optional().default({}),
   ts: z.number().int().nonnegative(),

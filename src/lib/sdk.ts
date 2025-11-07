@@ -124,7 +124,10 @@ export async function getKpis() {
 // -------------------------
 // Wrappers de Tracking por etapa/ação
 // -------------------------
-export type StepType = "Escutar" | "Processar" | "Identificar" | "Criar" | "Otimizar" | "Geral";
+export type StepType =
+  | "Escutar" | "Processar" | "Identificar" | "Criar" | "Otimizar"
+  | "Atual" | "Desejada"
+  | "Geral";
 
 function nowTs() {
   return Date.now();
@@ -134,51 +137,68 @@ function clampId(id: string, max = 64) {
   return (id ?? "").toString().slice(0, max);
 }
 
+function normalizeStep(step: StepType): "Atual" | "Desejada" | "Geral" {
+  switch (step) {
+    case "Escutar":
+    case "Processar":
+    case "Atual":
+      return "Atual";
+    case "Identificar":
+    case "Criar":
+    case "Otimizar":
+    case "Desejada":
+      return "Desejada";
+    case "Geral":
+    default:
+      return "Geral";
+  }
+}
+
 // Escutar – expand/collapse/select e conclusão do passo
 export function trackExpand(sessionId: string, step: StepType, itemId: string) {
-  return trackEvent({ sessionId, step, action: "expand", metadata: { id: clampId(itemId) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "expand", metadata: { id: clampId(itemId) }, ts: nowTs() });
 }
 export function trackCollapse(sessionId: string, step: StepType, itemId: string) {
-  return trackEvent({ sessionId, step, action: "collapse", metadata: { id: clampId(itemId) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "collapse", metadata: { id: clampId(itemId) }, ts: nowTs() });
 }
 export function trackSelect(sessionId: string, step: StepType, itemId: string, selected: boolean = true) {
-  return trackEvent({ sessionId, step, action: "select", metadata: { id: clampId(itemId), selected }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "select", metadata: { id: clampId(itemId), selected }, ts: nowTs() });
 }
 export function trackStepComplete(sessionId: string, step: Exclude<StepType, "Geral">, details?: Record<string, unknown>) {
-  return trackEvent({ sessionId, step, action: "step_complete", metadata: { ...(details ?? {}) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "step_complete", metadata: { ...(details ?? {}) }, ts: nowTs() });
 }
 
 // Processar – hover/click/dwell/tooltip
 export function trackHover(sessionId: string, step: StepType, targetId: string, durationMs?: number) {
-  return trackEvent({ sessionId, step, action: "hover", metadata: { id: clampId(targetId), durationMs }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "hover", metadata: { id: clampId(targetId), durationMs }, ts: nowTs() });
 }
 export function trackClick(sessionId: string, step: StepType, targetId: string) {
-  return trackEvent({ sessionId, step, action: "click", metadata: { id: clampId(targetId) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "click", metadata: { id: clampId(targetId) }, ts: nowTs() });
 }
 export function trackDwell(sessionId: string, step: StepType, targetId: string, durationMs: number) {
-  return trackEvent({ sessionId, step, action: "dwell", metadata: { id: clampId(targetId), durationMs }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "dwell", metadata: { id: clampId(targetId), durationMs }, ts: nowTs() });
 }
 export function trackTooltipShown(sessionId: string, step: StepType, tooltipId: string) {
-  return trackEvent({ sessionId, step, action: "tooltip_shown", metadata: { id: clampId(tooltipId) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "tooltip_shown", metadata: { id: clampId(tooltipId) }, ts: nowTs() });
 }
 
 // Identificar – flips/favoritos/tags
 export function trackFlip(sessionId: string, itemId: string, flippedTo: "front" | "back", step: StepType = "Identificar") {
-  return trackEvent({ sessionId, step, action: "flip", metadata: { id: clampId(itemId), to: flippedTo }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "flip", metadata: { id: clampId(itemId), to: flippedTo }, ts: nowTs() });
 }
 export function trackFavorite(sessionId: string, itemId: string, favorite: boolean, step: StepType = "Identificar") {
-  return trackEvent({ sessionId, step, action: "favorite_toggle", metadata: { id: clampId(itemId), favorite }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "favorite_toggle", metadata: { id: clampId(itemId), favorite }, ts: nowTs() });
 }
 export function trackTagToggle(sessionId: string, itemId: string, tag: string, added: boolean, step: StepType = "Identificar") {
-  return trackEvent({ sessionId, step, action: "tag_toggle", metadata: { id: clampId(itemId), tag: clampId(tag), added }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "tag_toggle", metadata: { id: clampId(itemId), tag: clampId(tag), added }, ts: nowTs() });
 }
 
 // Criar – seleção de piloto e "recomendado" visto
 export function trackPilotSelect(sessionId: string, pilotId: string, step: StepType = "Criar") {
-  return trackEvent({ sessionId, step, action: "pilot_select", metadata: { id: clampId(pilotId) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "pilot_select", metadata: { id: clampId(pilotId) }, ts: nowTs() });
 }
 export function trackPilotRecommendedSeen(sessionId: string, pilotId: string, step: StepType = "Criar") {
-  return trackEvent({ sessionId, step, action: "pilot_recommended_seen", metadata: { id: clampId(pilotId) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "pilot_recommended_seen", metadata: { id: clampId(pilotId) }, ts: nowTs() });
 }
 
 // Otimizar – interações de cockpit/widgets
@@ -188,20 +208,20 @@ export function trackWidgetInteraction(sessionId: string, widgetId: string, inte
 
 // Extras – CTA, Scheduler, PDF
 export function trackCtaClick(sessionId: string, ctaId: string, context?: Record<string, unknown>, step: StepType = "Geral") {
-  return trackEvent({ sessionId, step, action: "cta_click", metadata: { id: clampId(ctaId), ...(context ?? {}) }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "cta_click", metadata: { id: clampId(ctaId), ...(context ?? {}) }, ts: nowTs() });
 }
 export function trackSchedulerOpen(sessionId: string, provider: "Calendly" | "Outlook" | "Google" | string, url?: string, step: StepType = "Geral") {
-  return trackEvent({ sessionId, step, action: "scheduler_open", metadata: { provider: clampId(provider), url }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep(step), action: "scheduler_open", metadata: { provider: clampId(provider), url }, ts: nowTs() });
 }
 export function trackPdfGenerateStart(sessionId: string | undefined, kind: "journey" | "screenshot", sectionsIncluded?: string[]) {
   if (!sessionId) return Promise.resolve({ ok: true });
-  return trackEvent({ sessionId, step: "Otimizar", action: "pdf_generate_start", metadata: { kind, sectionsIncluded }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep("Otimizar" as StepType), action: "pdf_generate_start", metadata: { kind, sectionsIncluded }, ts: nowTs() });
 }
 export function trackPdfGenerateSuccess(sessionId: string | undefined, kind: "journey" | "screenshot", pages?: number, sectionsIncluded?: string[]) {
   if (!sessionId) return Promise.resolve({ ok: true });
-  return trackEvent({ sessionId, step: "Otimizar", action: "pdf_generate_success", metadata: { kind, pages, sectionsIncluded }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep("Otimizar" as StepType), action: "pdf_generate_success", metadata: { kind, pages, sectionsIncluded }, ts: nowTs() });
 }
 export function trackPdfGenerateError(sessionId: string | undefined, kind: "journey" | "screenshot", message?: string) {
   if (!sessionId) return Promise.resolve({ ok: true });
-  return trackEvent({ sessionId, step: "Otimizar", action: "pdf_generate_error", metadata: { kind, message }, ts: nowTs() });
+  return trackEvent({ sessionId, step: normalizeStep("Otimizar" as StepType), action: "pdf_generate_error", metadata: { kind, message }, ts: nowTs() });
 }

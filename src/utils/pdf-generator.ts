@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { trackEvent } from '@/lib/sdk';
+import { trackPdfGenerateStart, trackPdfGenerateSuccess, trackPdfGenerateError } from '@/lib/sdk';
+import { ESPEC_TEC } from '@/content/espec-tec';
 
 export interface JorneyData {
   step1: {
@@ -31,12 +32,10 @@ export interface JorneyData {
 
 export const generateJourneyPDF = async (sessionId?: string): Promise<void> => {
   const startTs = Date.now();
-  const sectionsIncluded = ['Escutar', 'Processar', 'Identificar', 'Criar', 'Otimizar'];
-  if (sessionId) {
-    try {
-      await trackEvent({ sessionId, step: 'Otimizar', action: 'pdf_generate_start', metadata: { sections: sectionsIncluded }, ts: startTs } as any);
-    } catch {}
-  }
+  const sectionsIncluded = ['SituacaoAtual', 'SituacaoDesejada', 'InvestimentoROI'];
+  try {
+    await trackPdfGenerateStart(sessionId, 'journey', sectionsIncluded);
+  } catch {}
 
   try {
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -46,12 +45,12 @@ export const generateJourneyPDF = async (sessionId?: string): Promise<void> => {
 
     // Header
     pdf.setFontSize(24);
-    pdf.setTextColor(139, 92, 246); // Purple color
-    pdf.text('Jornada de Transformação Digital', margin, 30);
+    pdf.setTextColor(139, 92, 246);
+    pdf.text('Jornada Consultiva — Antes e Depois', margin, 30);
     
     pdf.setFontSize(14);
     pdf.setTextColor(100, 100, 100);
-    pdf.text('Análise Consultiva TimeOS', margin, 40);
+    pdf.text('Análise em 2 Etapas (Atual → Desejada)', margin, 40);
 
     // Current date
     pdf.setFontSize(10);
@@ -59,119 +58,45 @@ export const generateJourneyPDF = async (sessionId?: string): Promise<void> => {
 
     let yPosition = 70;
 
-    // Step 1: Escutar
+    // Etapa 1: Situação Atual (Antes)
     pdf.setFontSize(16);
     pdf.setTextColor(139, 92, 246);
-    pdf.text('1. ESCUTAR - Situação Atual', margin, yPosition);
+    pdf.text('1. Situação Atual (Antes)', margin, yPosition);
     yPosition += 15;
 
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
-    const step1Content = [
-      '• Identificação de gargalos operacionais',
-      '• Mapeamento de processos ineficientes',
-      '• Análise da experiência do paciente',
-      '• Avaliação da gestão de recursos'
+    const atualContent = [
+      '• Desperdício de 40–60h/mês com tarefas manuais',
+      '• Perdas financeiras (R$ 8k–15k/mês) por retrabalho e inadimplência',
+      '• Conversão baixa por falta de pipeline/SLAs (−15% a −25%)',
+      '• Indicadores dispersos e pouca previsibilidade',
     ];
-    
-    step1Content.forEach(item => {
-      pdf.text(item, margin + 5, yPosition);
-      yPosition += 8;
-    });
+    atualContent.forEach(item => { pdf.text(item, margin + 5, yPosition); yPosition += 8; });
 
     yPosition += 10;
 
-    // Step 2: Processar
-    pdf.setFontSize(16);
-    pdf.setTextColor(59, 130, 246);
-    pdf.text('2. PROCESSAR - Diagnóstico', margin, yPosition);
-    yPosition += 15;
-
-    pdf.setFontSize(11);
-    pdf.setTextColor(0, 0, 0);
-    const step2Content = [
-      '• 40 horas mensais perdidas em retrabalho',
-      '• R$ 8.500 de potencial não realizado',
-      '• 65% de ineficiência operacional',
-      '• Falta de integração entre sistemas'
-    ];
-    
-    step2Content.forEach(item => {
-      pdf.text(item, margin + 5, yPosition);
-      yPosition += 8;
-    });
-
-    yPosition += 10;
-
-    // Step 3: Identificar
-    pdf.setFontSize(16);
-    pdf.setTextColor(234, 179, 8);
-    pdf.text('3. IDENTIFICAR - Soluções', margin, yPosition);
-    yPosition += 15;
-
-    pdf.setFontSize(11);
-    pdf.setTextColor(0, 0, 0);
-    const step3Content = [
-      '• Automação de agendamento inteligente',
-      '• CRM integrado para relacionamento',
-      '• Gestão automatizada de estoque',
-      '• Comunicação proativa com pacientes'
-    ];
-    
-    step3Content.forEach(item => {
-      pdf.text(item, margin + 5, yPosition);
-      yPosition += 8;
-    });
-
-    yPosition += 10;
-
-    // Step 4: Criar
-    pdf.setFontSize(16);
-    pdf.setTextColor(249, 115, 22);
-    pdf.text('4. CRIAR - Implementação', margin, yPosition);
-    yPosition += 15;
-
-    pdf.setFontSize(11);
-    pdf.setTextColor(0, 0, 0);
-    const step4Content = [
-      '• TimeOS: Plataforma unificada',
-      '• Integração com sistemas existentes',
-      '• Automação de workflows',
-      '• Dashboard de métricas em tempo real'
-    ];
-    
-    step4Content.forEach(item => {
-      pdf.text(item, margin + 5, yPosition);
-      yPosition += 8;
-    });
-
-    yPosition += 10;
-
-    // Check if we need a new page
+    // Check space
     if (yPosition > pageHeight - 80) {
       pdf.addPage();
       yPosition = 30;
     }
 
-    // Step 5: Otimizar
+    // Etapa 2: Situação Desejada (Depois)
     pdf.setFontSize(16);
     pdf.setTextColor(239, 68, 68);
-    pdf.text('5. OTIMIZAR - Resultados Esperados', margin, yPosition);
+    pdf.text('2. Situação Desejada (Depois)', margin, yPosition);
     yPosition += 15;
 
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
-    const step5Content = [
-      '• +65% aumento na receita em 12 meses',
-      '• -80% redução em tarefas manuais',
-      '• +450% pacientes reativados',
-      '• ROI: 892% - Payback em 3 meses'
+    const desejadaContent = [
+      '• Receita: +25% a +45% em 12 meses',
+      '• Eficiência: −40% a −60% de tarefas manuais',
+      '• Satisfação: NPS em alta com portal do cliente e SLAs',
+      '• Visibilidade: KPIs em tempo real e cockpit integrado'
     ];
-    
-    step5Content.forEach(item => {
-      pdf.text(item, margin + 5, yPosition);
-      yPosition += 8;
-    });
+    desejadaContent.forEach(item => { pdf.text(item, margin + 5, yPosition); yPosition += 8; });
 
     yPosition += 20;
 
@@ -181,12 +106,12 @@ export const generateJourneyPDF = async (sessionId?: string): Promise<void> => {
     
     pdf.setFontSize(14);
     pdf.setTextColor(239, 68, 68);
-    pdf.text('Resumo do Investimento', margin + 5, yPosition + 10);
+    pdf.text('Investimento & ROI (Resumo)', margin + 5, yPosition + 10);
     
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
-    pdf.text('Investimento Total (12 meses): R$ 18.500', margin + 5, yPosition + 20);
-    pdf.text('Retorno Projetado: R$ 165.000', margin + 5, yPosition + 28);
+    pdf.text('Investimento Inicial (estimado): ver Composer de Orçamento', margin + 5, yPosition + 20);
+    pdf.text('Projeções: ROI anual e payback conforme seleção de módulos', margin + 5, yPosition + 28);
 
     // Footer
     pdf.setFontSize(8);
@@ -199,18 +124,10 @@ export const generateJourneyPDF = async (sessionId?: string): Promise<void> => {
 
     const endTs = Date.now();
     const pages = (pdf as any)?.getNumberOfPages ? (pdf as any).getNumberOfPages() : 1;
-    if (sessionId) {
-      try {
-        await trackEvent({ sessionId, step: 'Otimizar', action: 'pdf_generate_success', metadata: { durationMs: endTs - startTs, pages, sections: sectionsIncluded }, ts: endTs } as any);
-      } catch {}
-    }
+    try { await trackPdfGenerateSuccess(sessionId, 'journey', pages, sectionsIncluded); } catch {}
   } catch (error) {
     const endTs = Date.now();
-    if (sessionId) {
-      try {
-        await trackEvent({ sessionId, step: 'Otimizar', action: 'pdf_generate_error', metadata: { message: (error as Error)?.message, sections: sectionsIncluded }, ts: endTs } as any);
-      } catch {}
-    }
+    try { await trackPdfGenerateError(sessionId, 'journey', (error as Error)?.message); } catch {}
     console.error('Erro ao gerar PDF:', error);
     throw new Error('Falha ao gerar o arquivo PDF');
   }
@@ -218,11 +135,7 @@ export const generateJourneyPDF = async (sessionId?: string): Promise<void> => {
 
 export const generateScreenshotPDF = async (elementId: string, sessionId?: string): Promise<void> => {
   const startTs = Date.now();
-  if (sessionId) {
-    try {
-      await trackEvent({ sessionId, step: 'Otimizar', action: 'pdf_screenshot_start', metadata: { selector: elementId }, ts: startTs } as any);
-    } catch {}
-  }
+  try { await trackPdfGenerateStart(sessionId, 'screenshot', [elementId]); } catch {}
 
   try {
     const element = document.getElementById(elementId);
@@ -267,22 +180,97 @@ export const generateScreenshotPDF = async (elementId: string, sessionId?: strin
 
     const endTs = Date.now();
     const pages = (pdf as any)?.getNumberOfPages ? (pdf as any).getNumberOfPages() : 1;
-    if (sessionId) {
-      try {
-        await trackEvent({ sessionId, step: 'Otimizar', action: 'pdf_screenshot_success', metadata: { durationMs: endTs - startTs, selector: elementId, pages }, ts: endTs } as any);
-      } catch {}
-    }
+    try { await trackPdfGenerateSuccess(sessionId, 'screenshot', pages, [elementId]); } catch {}
   } catch (error) {
     const endTs = Date.now();
-    if (sessionId) {
-      try {
-        await trackEvent({ sessionId, step: 'Otimizar', action: 'pdf_screenshot_error', metadata: { message: (error as Error)?.message, selector: elementId }, ts: endTs } as any);
-      } catch {}
-    }
+    try { await trackPdfGenerateError(sessionId, 'screenshot', (error as Error)?.message); } catch {}
     console.error('Erro ao gerar PDF:', error);
     if (error instanceof Error && error.message === 'Elemento não encontrado') {
       throw error;
     }
     throw new Error('Falha ao gerar o arquivo PDF');
+  }
+};
+
+export const generateTechPDF = async (sessionId?: string): Promise<void> => {
+  try {
+    await trackPdfGenerateStart(sessionId, 'journey', ['FichaTecnica']);
+  } catch {}
+
+  try {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const margin = 15;
+    let y = 25;
+
+    pdf.setFontSize(20);
+    pdf.setTextColor(31, 41, 55);
+    pdf.text('Ficha Técnica — Mariana Imóveis', margin, y);
+    y += 8;
+
+    pdf.setFontSize(10);
+    pdf.setTextColor(100, 116, 139);
+    pdf.text(`Versão: ${ESPEC_TEC.meta.versao}  •  Consultoria: ${ESPEC_TEC.meta.consultoria}`, margin, y);
+    y += 10;
+
+    const blocks = [
+      ESPEC_TEC.backendSupabase,
+      ESPEC_TEC.frontendVercel,
+      ESPEC_TEC.storageSupabase,
+      ESPEC_TEC.sslFrontend,
+      ESPEC_TEC.securityBackend,
+      ESPEC_TEC.contingencyVPS,
+      ESPEC_TEC.supportMaint,
+    ];
+
+    const addSection = (title: string, specs?: string[], limitacoes?: string[], traducao?: string) => {
+      pdf.setFontSize(13);
+      pdf.setTextColor(79, 70, 229);
+      pdf.text(title, margin, y);
+      y += 6;
+
+      pdf.setFontSize(10);
+      pdf.setTextColor(17, 24, 39);
+      if (specs && specs.length) {
+        specs.forEach((s) => {
+          if (y > 275) { pdf.addPage(); y = 20; }
+          pdf.text(`• ${s}`, margin + 2, y);
+          y += 5;
+        });
+      }
+      if (limitacoes && limitacoes.length) {
+        if (y > 275) { pdf.addPage(); y = 20; }
+        pdf.setTextColor(71, 85, 105);
+        pdf.text(`Limitações: ${limitacoes.join(' • ')}`, margin + 2, y);
+        y += 6;
+      }
+      if (traducao) {
+        if (y > 275) { pdf.addPage(); y = 20; }
+        pdf.setTextColor(100, 116, 139);
+        pdf.text(`“${traducao}”`, margin + 2, y);
+        y += 6;
+      }
+      y += 3;
+    };
+
+    blocks.forEach((b: any) => addSection(b.title, b.specs, b.limitacoes, b.traducao));
+
+    if (y > 260) { pdf.addPage(); y = 20; }
+    pdf.setFontSize(12);
+    pdf.setTextColor(79, 70, 229);
+    pdf.text('Resumo para a Cliente', margin, y);
+    y += 6;
+    pdf.setFontSize(10);
+    pdf.setTextColor(17, 24, 39);
+    pdf.text(ESPEC_TEC.pitch, margin, y, { maxWidth: 180 });
+
+    pdf.save('ficha-tecnica.pdf');
+
+    try {
+      await trackPdfGenerateSuccess(sessionId, 'journey', (pdf as any)?.getNumberOfPages?.() ?? 1, ['FichaTecnica']);
+    } catch {}
+  } catch (error) {
+    try { await trackPdfGenerateError(sessionId, 'journey', (error as Error)?.message); } catch {}
+    console.error('Erro ao gerar PDF técnico:', error);
+    throw new Error('Falha ao gerar o arquivo PDF da ficha técnica');
   }
 };

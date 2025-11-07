@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, Clock, Target, CheckCircle, ArrowRight, CheckCircle2, Circle, FileText, Filter, UserCheck, DollarSign } from "lucide-react";
+import { Calendar, Users, Clock, Target, CheckCircle, ArrowRight, CheckCircle2, Circle, FileText, Filter, UserCheck, DollarSign, Settings } from "lucide-react";
 import { getPilots, trackPilotRecommendedSeen, trackPilotSelect, trackStepComplete, trackCtaClick } from "@/lib/sdk";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -21,84 +21,82 @@ const defaultPilotos: Array<{
   recomendado: boolean;
   posicao?: { left: string };
 }> = [
-  // Módulo 1 — Financeiro Vivo + CRM Vivo
+  // Módulo 1 — OpsUnit Controle Financeiro
   {
     id: "mod-financeiro-crm",
-    titulo: "OpsUnit Financeiro Vivo + CRM Vivo",
-    foco: "Proposta → contrato → fatura com baixa automática; pipeline organizado e previsibilidade de caixa.",
+    titulo: "OpsUnit Controle Financeiro",
+    foco: "Automatização e centralização da gestão financeira: boletos, recebimentos, fluxo de caixa, repasses e despesas.",
     icone: DollarSign as unknown as IconType,
     duracao: "30 dias",
     escopo: [
-      "Painel Financeiro (AP/AR, fluxo de caixa, inadimplência)",
-      "Pipeline CRM por origem (site/WhatsApp/bio IG)",
-      "Integração WhatsApp Cloud + Clicksign/DocuSign + gateway pagamentos",
-      "Alertas de vencimento e conciliação com baixa automática",
+      "Painel Financeiro (AP/AR, fluxo de caixa, repasses, despesas)",
+      "Automação de boletos e recebimentos",
+      "Conciliação e baixa automática",
+      "Integrações: pagamentos e assinatura eletrônica",
     ],
     metas: [
-      "100% propostas → contrato → fatura",
       "Fechamento de caixa D+2",
-      "+20% taxa de conversão",
-      "Inadimplência monitorada em D+7/D+30",
+      "-20% a -40% tempo administrativo financeiro",
+      "Risco de erro reduzido em repasses",
     ],
     cronograma: [
       { title: "Acessos, centros de custo e pipelines", window: "Dias 1–5" },
-      { title: "Proposta → assinatura → fatura (integrações)", window: "Dias 6–15" },
-      { title: "Conciliação e alertas de inadimplência", window: "Dias 16–24" },
+      { title: "Boletos, recebimentos e conciliação (integrações)", window: "Dias 6–15" },
+      { title: "Repasses e despesas (automação)", window: "Dias 16–24" },
       { title: "Dashboards e treinamento", window: "Dias 25–30" },
     ],
     recomendado: true,
     posicao: { left: "10%" },
   },
 
-  // Módulo 2 — Área do Cliente (Mentoria Premium)
+  // Módulo 2 — BrandForge Base Digital + CRM Vivo
   {
     id: "mod-area-cliente",
-    titulo: "Área do Cliente (Mentoria Premium)",
-    foco: "Portal exclusivo com trilhas, sessões, materiais e NPS integrados ao CRM.",
-    icone: UserCheck as unknown as IconType,
-    duracao: "25 dias",
+    titulo: "BrandForge Base Digital + CRM Vivo",
+    foco: "Portal de imóveis e captação integrada ao CRM com funil e histórico de negociações.",
+    icone: Target as unknown as IconType,
+    duracao: "30 dias",
     escopo: [
-      "Portal por cliente com autenticação e perfis",
-      "Trilhas digitais de mentoria, tarefas e checklists",
-      "Agenda de sessões + registro de conclusões",
-      "NPS/feedback pós‑sessão e notificações (n8n)",
+      "Site/portal com imóveis e formulário",
+      "Integração leads → CRM e qualificação",
+      "Pipeline de propostas e status",
+      "Painel de origem de leads",
     ],
     metas: [
-      "≥ 80% sessões registradas no portal",
-      "NPS ≥ 70",
-      "-40% tempo em organização manual",
+      "+30% leads inbound pelo portal",
+      "≥ 90% leads rastreados",
+      "Histórico centralizado por cliente",
     ],
     cronograma: [
-      { title: "Onboarding e estrutura do portal", window: "Dias 1–5" },
-      { title: "Trilhas/tarefas + agenda de sessões", window: "Dias 6–12" },
-      { title: "NPS/feedback + notificações", window: "Dias 13–20" },
-      { title: "Go‑live e ajustes com clientes piloto", window: "Dias 21–25" },
+      { title: "Portal e catálogo (estrutura e conteúdo)", window: "Dias 1–7" },
+      { title: "Integração leads → CRM + tags", window: "Dias 8–15" },
+      { title: "Pipeline e dashboards", window: "Dias 16–22" },
+      { title: "Go‑live e ajustes", window: "Dias 23–30" },
     ],
     recomendado: true,
     posicao: { left: "40%" },
   },
 
-  // Módulo 3 — BrandForge (Presença Digital)
+  // Módulo 3 — OpsUnit Operações
   {
     id: "mod-brandforge",
-    titulo: "BrandForge (Presença Digital)",
-    foco: "Site 1.0 com LPs e CTAs rastreáveis integradas ao CRM.",
-    icone: Target,
-    duracao: "20 dias",
+    titulo: "OpsUnit Operações",
+    foco: "Orquestra a rotina operacional: contratos, imóveis, laudos, manutenções, correspondências e comunicados em um único sistema.",
+    icone: Settings as unknown as IconType,
+    duracao: "25 dias",
     escopo: [
-      "Site institucional enxuto (institucional + formulário)",
-      "Landing Page por origem (site/IG) com tags",
-      "Integração LP → CRM + Meta Pixel",
-      "Painel de leads por origem",
+      "Gestão de contratos com assinatura eletrônica",
+      "Cadastro de imóveis, laudos e manutenções",
+      "Comunicados e correspondências administrativas",
     ],
     metas: [
-      "+30% leads inbound via site",
-      "≥ 90% leads com origem rastreada",
+      "Padronização operacional e menor retrabalho",
+      "Tempo de fechamento -30% a -50%",
     ],
     cronograma: [
-      { title: "Site 1.0 (estrutura e conteúdo)", window: "Dias 1–7" },
-      { title: "LPs por nicho + CTAs com tracking", window: "Dias 8–14" },
-      { title: "Integração CRM + painel por origem", window: "Dias 15–20" },
+      { title: "Workflows operacionais e contratos", window: "Dias 1–8" },
+      { title: "Imóveis, laudos e manutenções", window: "Dias 9–17" },
+      { title: "Comunicados e correspondências", window: "Dias 18–25" },
     ],
     recomendado: true,
     posicao: { left: "70%" },
@@ -160,25 +158,25 @@ export const Step4Criar = ({ onNext, sessionId }: Step4CriarProps) => {
         ],
       },
       {
-        title: "Módulo 1 — Financeiro + CRM (alto impacto/baixo esforço)",
-        description: "Centralização AP/AR + pipeline com integrações e conciliação automática",
+        title: "Módulo 1 — OpsUnit Controle Financeiro (alto impacto/baixo esforço)",
+        description: "Boletos, recebimentos, fluxo de caixa, repasses e despesas",
         status: "in-progress" as const,
         window: "Semanas 3-6",
         progress: 60,
         tasks: getTasks("mod-financeiro-crm"),
       },
       {
-        title: "Módulo 2 — Área do Cliente (alto impacto/médio esforço)",
+        title: "Módulo 2 — Base Digital + CRM Vivo (alto impacto/médio esforço)",
         description:
-          "Portal de mentorias com trilhas, sessões, materiais e NPS",
+          "Portal de imóveis, captação e funil com histórico",
         status: "upcoming" as const,
         window: "Semanas 7-10",
         progress: 0,
         tasks: getTasks("mod-area-cliente"),
       },
       {
-        title: "Módulo 3 — BrandForge (médio impacto/baixo esforço)",
-        description: "Site 1.0 + LPs com CTAs rastreáveis integradas ao CRM",
+        title: "Módulo 3 — OpsUnit Operações (médio impacto/baixo esforço)",
+        description: "Orquestração operacional: contratos, imóveis, laudos, manutenções e comunicados",
         status: "upcoming" as const,
         window: "Semanas 11-13",
         progress: 0,

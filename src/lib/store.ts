@@ -7,6 +7,11 @@ interface JourneyState {
   isComplete: boolean;
   
   // Dados das etapas (sem PII)
+  step1Baseline: {
+    manualHoursRange: string;
+    monthlyLossRange: string;
+    conversionRange: string;
+  };
   step1Data: {
     selectedProblems: string[];
     expandedItems: string[];
@@ -32,6 +37,9 @@ interface JourneyState {
     activeWidget: string | null;
     simulationActive: boolean;
     widgetInteractions: Record<string, string[]>;
+    cart: {
+      [key: string]: { selecionado: boolean; modulos: Record<string, boolean> };
+    };
   };
   
   // Preferências do usuário
@@ -43,6 +51,7 @@ interface JourneyState {
   setComplete: (complete: boolean) => void;
   
   // Step 1 actions
+  setStep1Baseline: (b: { manualHoursRange: string; monthlyLossRange: string; conversionRange: string }) => void;
   addSelectedProblem: (problemId: string) => void;
   removeSelectedProblem: (problemId: string) => void;
   setExpandedItems: (items: string[]) => void;
@@ -64,6 +73,9 @@ interface JourneyState {
   setActiveWidget: (widgetId: string | null) => void;
   setSimulationActive: (active: boolean) => void;
   addWidgetInteraction: (widgetId: string, interaction: string) => void;
+  cartToggleProduct: (productId: string) => void;
+  cartToggleModule: (productId: string, moduleId: string) => void;
+  cartClear: () => void;
   
   // Preferences
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
@@ -76,6 +88,11 @@ interface JourneyState {
 const initialState = {
   currentStep: 0,
   isComplete: false,
+  step1Baseline: {
+    manualHoursRange: '40–60h/mês',
+    monthlyLossRange: 'R$ 8–15k/mês',
+    conversionRange: '-15% a -25%'
+  },
   step1Data: {
     selectedProblems: [],
     expandedItems: [],
@@ -97,6 +114,7 @@ const initialState = {
     activeWidget: null,
     simulationActive: false,
     widgetInteractions: {},
+    cart: {},
   },
   theme: 'system' as const,
   autoMode: false,
@@ -111,6 +129,7 @@ export const useJourneyStore = create<JourneyState>()(
       setComplete: (complete) => set({ isComplete: complete }),
       
       // Step 1
+      setStep1Baseline: (b) => set(() => ({ step1Baseline: b })),
       addSelectedProblem: (problemId) => set((state) => ({
         step1Data: {
           ...state.step1Data,
@@ -201,6 +220,39 @@ export const useJourneyStore = create<JourneyState>()(
           },
         },
       })),
+      cartToggleProduct: (productId) => set((state) => {
+        const prev = state.step5Data.cart[productId];
+        const nextSel = prev ? !prev.selecionado : true;
+        return {
+          step5Data: {
+            ...state.step5Data,
+            cart: {
+              ...state.step5Data.cart,
+              [productId]: { selecionado: nextSel, modulos: prev?.modulos ?? {} },
+            },
+          },
+        };
+      }),
+      cartToggleModule: (productId, moduleId) => set((state) => {
+        const prev = state.step5Data.cart[productId];
+        const current = prev?.modulos?.[moduleId] ?? false;
+        const togglingOn = !current;
+        const nextModulos = { ...(prev?.modulos ?? {}), [moduleId]: !current };
+        const nextSelecionado = (prev?.selecionado ?? false) || togglingOn;
+        return {
+          step5Data: {
+            ...state.step5Data,
+            cart: {
+              ...state.step5Data.cart,
+              [productId]: {
+                selecionado: nextSelecionado,
+                modulos: nextModulos,
+              },
+            },
+          },
+        };
+      }),
+      cartClear: () => set((state) => ({ step5Data: { ...state.step5Data, cart: {} } })),
       
       // Preferences
       setTheme: (theme) => set({ theme }),
@@ -215,6 +267,7 @@ export const useJourneyStore = create<JourneyState>()(
       // Persistir apenas dados não sensíveis
       partialize: (state) => ({
         currentStep: state.currentStep,
+        step1Baseline: state.step1Baseline,
         step1Data: state.step1Data,
         step2Data: state.step2Data,
         step3Data: state.step3Data,

@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
+import { StepAtual } from "@/components/steps/StepAtual";
+import { StepDesejada } from "@/components/steps/StepDesejada";
 import { StepNavigation } from "@/components/StepNavigation";
-import { Step1Escutar } from "@/components/steps/Step1Escutar";
-import { Step2Processar } from "@/components/steps/Step2Processar";
-import { Step3Identificar } from "@/components/steps/Step3Identificar";
-import { Step4Criar } from "@/components/steps/Step4Criar";
-import { Step5Otimizar } from "@/components/steps/Step5Otimizar";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { MessageSquare, Phone, LogOut } from "lucide-react";
 import { startSession, endSession, trackCtaClick } from "@/lib/sdk";
+import { useJourneyStore } from "@/lib/store";
 import { useAuth } from "@/hooks/use-auth";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const totalSteps = 5;
+  const totalSteps = 2;
   const [sessionId, setSessionId] = useState<string | null>(null);
   const { logout } = useAuth();
+  const resetJourney = useJourneyStore(s => s.resetJourney);
 
   const nextStep = () => {
     if (currentStep < totalSteps - 1) {
@@ -101,11 +100,20 @@ const Index = () => {
         onPrevious={previousStep}
         onNext={nextStep}
         canGoNext={true}
+        onStepSelect={(i) => setCurrentStep(i)}
       />
 
       {/* Theme Toggle e Logout */}
       <div className="fixed top-4 right-4 sm:top-8 sm:right-8 z-40 animate-fade-in">
         <div className="flex items-center gap-2 sm:gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => { resetJourney(); setIsComplete(false); setCurrentStep(0); }}
+            className="bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3"
+          >
+            Resetar
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -135,12 +143,9 @@ const Index = () => {
         </Button>
       </div>
 
-      {/* Steps */}
-      {currentStep === 0 && <Step1Escutar onNext={nextStep} sessionId={sessionId ?? undefined} />}
-      {currentStep === 1 && <Step2Processar onNext={nextStep} sessionId={sessionId ?? undefined} />}
-      {currentStep === 2 && <Step3Identificar onNext={nextStep} sessionId={sessionId ?? undefined} />}
-      {currentStep === 3 && <Step4Criar onNext={nextStep} sessionId={sessionId ?? undefined} />}
-      {currentStep === 4 && <Step5Otimizar onComplete={completeJourney} sessionId={sessionId ?? undefined} />}
+      {/* Steps (2 etapas) */}
+      {currentStep === 0 && <StepAtual onNext={nextStep} sessionId={sessionId ?? undefined} />} 
+      {currentStep === 1 && <StepDesejada onComplete={completeJourney} sessionId={sessionId ?? undefined} />}
     </main>
   );
 };

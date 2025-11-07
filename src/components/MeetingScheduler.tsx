@@ -236,224 +236,28 @@ export const MeetingScheduler = ({ sessionId }: MeetingSchedulerProps) => {
           <Calendar className="w-4 h-4" />
           AGENDAR REUNIÃO
         </div>
-        <h2 className="text-3xl font-bold mb-4">
-          Vamos Conversar Sobre Sua Transformação
-        </h2>
+        <h2 className="text-3xl font-bold mb-4">Vamos Conversar Sobre Sua Transformação</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Agende uma conversa estratégica personalizada para sua clínica. 
-          Nossa equipe vai apresentar um plano específico para seus objetivos.
+          Direto pelo WhatsApp do time comercial. Resposta rápida e prática.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Dados Pessoais */}
-          <Card className="step-card step-4">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5 text-step-4" />
-                Seus Dados
-              </CardTitle>
-              <CardDescription>
-                Informações para contato e personalização da reunião
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo *</Label>
-                <Input
-                  id="name"
-                  placeholder="Seu nome completo"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Telefone *</Label>
-                  <Input
-                    id="phone"
-                    placeholder="(11) 99999-9999"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="clinicName">Nome da Clínica *</Label>
-                  <Input
-                    id="clinicName"
-                    placeholder="Nome da sua clínica"
-                    value={formData.clinicName}
-                    onChange={(e) => handleInputChange('clinicName', e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="clinicType">Especialidade</Label>
-                  <Select value={formData.clinicType} onValueChange={(value) => handleInputChange('clinicType', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="odontologia">Odontologia</SelectItem>
-                      <SelectItem value="medicina">Medicina Geral</SelectItem>
-                      <SelectItem value="fisioterapia">Fisioterapia</SelectItem>
-                      <SelectItem value="psicologia">Psicologia</SelectItem>
-                      <SelectItem value="dermatologia">Dermatologia</SelectItem>
-                      <SelectItem value="veterinaria">Veterinária</SelectItem>
-                      <SelectItem value="outros">Others</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Agendamento */}
-          <Card className="step-card step-4">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-step-4" />
-                Agendamento
-              </CardTitle>
-              <CardDescription>
-                Escolha data, horário e formato da reunião
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="preferredDate">Data Preferida *</Label>
-                <Select value={formData.preferredDate} onValueChange={(value) => handleInputChange('preferredDate', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma data" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getAvailableDates().map((date, index) => (
-                      <SelectItem key={index} value={date.toISOString().split('T')[0]}>
-                        {date.toLocaleDateString('pt-BR', {
-                          weekday: 'short',
-                          day: '2-digit',
-                          month: '2-digit'
-                        })}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="preferredTime">Horário Preferido *</Label>
-                <Select value={formData.preferredTime} onValueChange={(value) => handleInputChange('preferredTime', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um horário" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Formato da Reunião *</Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {meetingTypes.map((type) => {
-                    const Icon = type.icon;
-                    return (
-                      <Button
-                        key={type.value}
-                        type="button"
-                        variant={formData.meetingType === type.value ? "default" : "outline"}
-                        className={`justify-start h-auto p-3 ${
-                          formData.meetingType === type.value 
-                            ? 'bg-gradient-hero text-primary-foreground' 
-                            : ''
-                        }`}
-                        onClick={() => handleInputChange('meetingType', type.value)}
-                        aria-label={`Selecionar reunião por ${type.label.toLowerCase()}`}
-                      >
-                        <Icon className="w-4 h-4 mr-2" />
-                        {type.label}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Objetivos */}
-        <Card className="step-card step-4">
-          <CardHeader>
-            <CardTitle>Objetivos da Reunião</CardTitle>
-            <CardDescription>
-              Conte-nos sobre seus principais desafios e objetivos (opcional)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="goals">Objetivos e Desafios</Label>
-              <Textarea
-                id="goals"
-                placeholder="Ex: Quero aumentar a ocupação da agenda, automatizar processos administrativos, melhorar a experiência dos pacientes..."
-                className="min-h-[100px]"
-                value={formData.goals}
-                onChange={(e) => handleInputChange('goals', e.target.value)}
-                aria-label="Descreva seus objetivos e desafios principais"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Submit */}
-        <div className="text-center">
+      <Card className="step-card step-4 text-center">
+        <CardContent className="py-8">
           <Button
-            type="submit"
             size="lg"
-            disabled={!isFormValid() || isLoading}
-            className="bg-gradient-hero hover:opacity-90 text-primary-foreground px-8 py-3 text-lg transition-all duration-300 hover:scale-105"
+            className="bg-gradient-hero hover:opacity-90 text-primary-foreground px-10 py-6 text-lg"
+            onClick={() => {
+              if (sessionId) trackCtaClick(sessionId, 'meeting_whatsapp', { location: 'meeting_section' });
+              const msg = 'Olá! Gostaria de agendar uma reunião comercial para discutir a proposta.';
+              window.open(`https://wa.me/5511943334229?text=${encodeURIComponent(msg)}`, '_blank');
+            }}
+            aria-label="Agendar Reunião Comercial via WhatsApp"
           >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-                Agendando...
-              </>
-            ) : (
-              <>
-                <Calendar className="w-5 h-5 mr-2" />
-                Confirmar Agendamento
-              </>
-            )}
+            <MessageSquare className="w-5 h-5 mr-2" /> Agendar Reunião Comercial via WhatsApp
           </Button>
-          
-          <p className="text-xs text-muted-foreground mt-4">
-            Duração aproximada: 45 minutos • Sem compromisso • Consultoria gratuita
-          </p>
-        </div>
-      </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

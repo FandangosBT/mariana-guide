@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Step5Otimizar } from './Step5Otimizar';
 import { vi } from 'vitest';
@@ -22,36 +22,24 @@ describe('Step5Otimizar', () => {
     vi.clearAllMocks();
   });
 
-  it('renderiza widgets e permite interação', async () => {
+  it('abre composer, seleciona produto e exibe resumo', async () => {
     const user = userEvent.setup();
     render(<Step5Otimizar onComplete={mockOnComplete} sessionId={mockSessionId} />);
 
-    // Verifica se os widgets são renderizados
-    expect(screen.getByText('Taxa de Ocupação')).toBeInTheDocument();
-    expect(screen.getByText('Hóspedes Reativados')).toBeInTheDocument();
-    expect(screen.getByText('Receita Mensal')).toBeInTheDocument();
+    // Abre o compositor de orçamento
+    const customizeBtn = screen.getByRole('button', { name: /personalizar orçamento/i });
+    await user.click(customizeBtn);
 
-    // Verifica se o botão de simulação está presente
-    const simulateButton = screen.getByRole('button', { name: /simular/i });
-    expect(simulateButton).toBeInTheDocument();
+    // Seleciona um produto
+    const product = await screen.findByText('BrandForge Base Digital + CRM Vivo');
+    await user.click(product);
 
-    // Clica no botão de simulação
-    await user.click(simulateButton);
-    expect(simulateButton).toHaveTextContent('Simulando...');
+    // Resumo do orçamento
+    expect(await screen.findByText('Resumo do Orçamento')).toBeInTheDocument();
+    expect(screen.getByText('BrandForge Base Digital + CRM Vivo')).toBeInTheDocument();
   });
 
-  it('permite gerar PDF', async () => {
-    const user = userEvent.setup();
-    render(<Step5Otimizar onComplete={mockOnComplete} sessionId={mockSessionId} />);
-
-    const pdfButton = screen.getByRole('button', { name: /baixar resumo completo da jornada em pdf/i });
-    expect(pdfButton).toBeInTheDocument();
-
-    await user.click(pdfButton);
-    // Verifica se o PDF generator foi chamado
-    const { generateJourneyPDF } = await import('@/utils/pdf-generator');
-    expect(generateJourneyPDF).toHaveBeenCalledWith(mockSessionId);
-  });
+  // PDF é testado no StepDesejada
 
   it('chama onComplete ao finalizar jornada', async () => {
     const user = userEvent.setup();
@@ -64,14 +52,35 @@ describe('Step5Otimizar', () => {
     expect(mockOnComplete).toHaveBeenCalled();
   });
 
-  it('funciona sem sessionId', async () => {
+  it('CTA WhatsApp envia resumo e faz tracking', async () => {
+    const user = userEvent.setup();
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null as any);
+    const { trackCtaClick } = await import('@/lib/sdk');
+
+    render(<Step5Otimizar onComplete={mockOnComplete} sessionId={mockSessionId} />);
+
+    const customizeBtn = screen.getByRole('button', { name: /personalizar orçamento/i });
+    await user.click(customizeBtn);
+    const product = await screen.findByText('BrandForge Base Digital + CRM Vivo');
+    await user.click(product);
+    const proposalBtn = await screen.findByRole('button', { name: /solicitar proposta detalhada/i });
+    await user.click(proposalBtn);
+
+    expect(openSpy).toHaveBeenCalled();
+    expect(trackCtaClick).toHaveBeenCalled();
+
+    openSpy.mockRestore();
+  });
+
+  it('funciona sem sessionId (composer)', async () => {
     const user = userEvent.setup();
     render(<Step5Otimizar onComplete={mockOnComplete} />);
 
-    const simulateButton = screen.getByRole('button', { name: /simular/i });
-    await user.click(simulateButton);
-    
-    // Não deve quebrar sem sessionId
-    expect(simulateButton).toHaveTextContent('Simulando...');
+    const customizeBtn = screen.getByRole('button', { name: /personalizar orçamento/i });
+    await user.click(customizeBtn);
+    const product = await screen.findByText('OpsUnit CRM Vivo');
+    await user.click(product);
+    const proposalBtn = await screen.findByRole('button', { name: /solicitar proposta detalhada/i });
+    expect(proposalBtn).toBeEnabled();
   });
 });

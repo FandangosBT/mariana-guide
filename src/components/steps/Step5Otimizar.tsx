@@ -28,10 +28,12 @@ import {
   Calculator,
   Timer,
   Plus,
-  Minus
+  Minus,
+  CreditCard
 } from "lucide-react";
 import { trackWidgetInteraction, trackCtaClick } from "@/lib/sdk";
 import { generateJourneyPDF } from "@/utils/pdf-generator";
+import { useJourneyStore } from "@/lib/store";
 
 
 // Debounce hook para atrasar o recálculo do orçamento
@@ -56,7 +58,7 @@ const widgets = [
   },
   {
     id: "pacientes",
-    titulo: "Hóspedes Reativados",
+    titulo: "Pacientes Reativados",
     valor: "847",
     tendencia: "+300% a +500%",
     cor: "step-2", 
@@ -83,7 +85,7 @@ const widgets = [
   },
   {
     id: "satisfacao",
-    titulo: "Satisfação dos Hóspedes",
+    titulo: "Satisfação dos Pacientes",
     valor: "4.9/5",
     tendencia: "+18%",
     cor: "step-5",
@@ -123,11 +125,12 @@ type ProdutoOrcamento = {
 };
 
 const orcamentoOptions: ProdutoOrcamento[] = [
+  // 1) Financeiro + Agenda
   {
     id: "financeiro-gestao-contas-clientes",
-    nome: "OpsUnit Financeiro Vivo + Gestão de Contas e Clientes",
-    descricao: "AP/AR, fluxo de caixa e cadastro de clientes centralizados com conciliação e alertas",
-    precoBase: 4896,
+    nome: "OpsUnit Controle Financeiro",
+    descricao: "Unidade de inteligência responsável por automatizar e centralizar toda a gestão financeira do negócio — incluindo boletos, recebimentos, fluxo de caixa, repasses e despesas.",
+    precoBase: 10008,
     economiaMensal: 1100,
     modulos: [],
     icon: DollarSign,
@@ -135,30 +138,35 @@ const orcamentoOptions: ProdutoOrcamento[] = [
     roiPrevisto: 320,
     paybackMeses: 4
   },
+  // 2) BrandForge + CRM
   {
-    id: "crm-vivo",
-    nome: "OpsUnit CRM Vivo",
-    descricao: "Pipeline, playbooks e follow-ups automáticos integrados ao WhatsApp",
-    precoBase: 3670,
-    economiaMensal: 950,
-    modulos: [],
-    icon: Users,
-    cor: "fuchsia",
-    roiPrevisto: 340,
-    paybackMeses: 4
+    id: "brandforge-infraestrutura",
+    nome: "BrandForge Base Digital + CRM Vivo",
+    descricao: "Portal de imóveis e captação integrada ao CRM com pipeline e histórico de negociações",
+    precoBase: 0,
+    modulos: [
+      { id: "portal-imoveis-crm", nome: "Portal de Imóveis + Captação (CRM)", preco: 3670, obrigatorio: false, economiaMensal: 700 },
+      { id: "painel-origem-leads", nome: "Painel de Origem de Leads", preco: 2447, obrigatorio: false, economiaMensal: 700 }
+    ],
+    icon: Target,
+    cor: "pink",
+    roiPrevisto: 350,
+    paybackMeses: 6
   },
+  // 3) Contratos Digitais + Painel
   {
     id: "gestao-contratos",
-    nome: "OpsUnit Gestão de Contratos",
-    descricao: "Templates, assinatura eletrônica e auditoria com trilhas completas",
-    precoBase: 3672,
+    nome: "OpsUnit Operações",
+    descricao: "Unidade de inteligência responsável por orquestrar toda a rotina operacional da empresa, integrando a gestão de contratos, imóveis, laudos, manutenções, correspondências e comunicados administrativos em um único sistema.",
+    precoBase: 11520,
     economiaMensal: 800,
     modulos: [],
-    icon: FileText,
+    icon: Settings,
     cor: "purple",
     roiPrevisto: 300,
     paybackMeses: 4
   },
+  // Itens adicionais
   {
     id: "social-media-campanhas",
     nome: "OpsUnit Gestão de Social Media e Campanhas",
@@ -172,23 +180,9 @@ const orcamentoOptions: ProdutoOrcamento[] = [
     paybackMeses: 5
   },
   {
-    id: "brandforge-infraestrutura",
-    nome: "BrandForge Infraestrutura Digital",
-    descricao: "Site institucional, LPs e integrações de captação conectadas ao CRM",
-    precoBase: 0,
-    modulos: [
-      { id: "pagina-institucional-crm-cta", nome: "Página institucional + CRM + CTA Whatsapp", preco: 3670, obrigatorio: false, economiaMensal: 700 },
-      { id: "area-cliente", nome: "Área do Cliente", preco: 2447, obrigatorio: false, economiaMensal: 700 }
-    ],
-    icon: Target,
-    cor: "pink",
-    roiPrevisto: 350,
-    paybackMeses: 6
-  },
-  {
     id: "timeos",
     nome: "TimeOS",
-    descricao: "Plataforma unificada e integração com WhatsApp + inteligência de mercado",
+    descricao: "Sistema inteligente que centraliza todas as automações, métricas e integrações do negócio em um único ambiente. Com um agente de IA conectado ao WhatsApp e um painel web de KPIs em tempo real, transforme gestão em clareza, automação e controle total.",
     precoBase: 22760,
     economiaMensal: 1800,
     modulos: [],
@@ -199,26 +193,32 @@ const orcamentoOptions: ProdutoOrcamento[] = [
   }
 ];
 
+// Produtos que não devem aparecer no composer (ocultos da UI)
+const HIDDEN_PRODUCT_IDS = new Set<string>(["social-media-campanhas"]);
+
 interface Step5OtimizarProps {
   onComplete: () => void;
   sessionId?: string;
+  headingTitle?: string;
+  headingSubtitle?: string;
+  showStepBadge?: boolean;
 }
 
-export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => {
+export const Step5Otimizar = ({ onComplete, sessionId, headingTitle, headingSubtitle, showStepBadge = true }: Step5OtimizarProps) => {
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [showOrcamento, setShowOrcamento] = useState(false);
+  const [recommendedApplied, setRecommendedApplied] = useState(false);
+  const [discountUntil, setDiscountUntil] = useState<number | null>(null);
 
-  // Modelo de precificação fixo: licença permanente
-  const modeloPrecificacao: 'licenca' = 'licenca';
+  // Modelo de precificação: licença (padrão); preparado para assinatura futuramente
+  const modeloPrecificacao: 'licenca' | 'assinatura' = 'licenca';
 
-  // Estado do carrinho de compras
-  const [carrinho, setCarrinho] = useState<{
-    [key: string]: {
-      selecionado: boolean;
-      modulos: { [key: string]: boolean };
-    };
-  }>({});
+  // Estado do carrinho (persistente via Zustand)
+  const carrinho = useJourneyStore(s => s.step5Data.cart);
+  const cartToggleProduct = useJourneyStore(s => s.cartToggleProduct);
+  const cartToggleModule = useJourneyStore(s => s.cartToggleModule);
+  const cartClear = useJourneyStore(s => s.cartClear);
 
   // Estado debounced do carrinho (300ms)
   const debouncedCarrinho = useDebounce(carrinho, 300);
@@ -227,6 +227,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
   const calcularEconomiaMensal = (cartState = debouncedCarrinho) => {
     let economia = 0;
     Object.entries(cartState).forEach(([produtoId, config]) => {
+      if (HIDDEN_PRODUCT_IDS.has(produtoId)) return;
       if (!config.selecionado) return;
       const produto = orcamentoOptions.find(p => p.id === produtoId);
       if (!produto) return;
@@ -249,34 +250,16 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
 
 
   // Funções do carrinho de compras
-  const toggleProduto = (produtoId: string) => {
-    setCarrinho(prev => ({
-      ...prev,
-      [produtoId]: {
-        selecionado: prev[produtoId]?.selecionado ? !prev[produtoId].selecionado : true,
-        modulos: prev[produtoId]?.modulos ?? {}
-      }
-    }));
-  };
+  const toggleProduto = (produtoId: string) => { cartToggleProduct(produtoId); };
 
-  const toggleModulo = (produtoId: string, moduloId: string) => {
-    setCarrinho(prev => ({
-      ...prev,
-      [produtoId]: {
-        selecionado: prev[produtoId]?.selecionado ?? false,
-        modulos: {
-          ...prev[produtoId]?.modulos,
-          [moduloId]: prev[produtoId]?.modulos?.[moduloId] ? !prev[produtoId].modulos[moduloId] : true
-        }
-      }
-    }));
-  };
+  const toggleModulo = (produtoId: string, moduloId: string) => { cartToggleModule(produtoId, moduloId); };
 
   // Cálculo de custos totais (licença permanente)
   const calcularCustoTotal = (cartState = debouncedCarrinho) => {
     // Soma dos preços-base e módulos
     let total = 0;
     Object.entries(cartState).forEach(([produtoId, config]) => {
+      if (HIDDEN_PRODUCT_IDS.has(produtoId)) return;
       if (config.selecionado) {
         const produto = orcamentoOptions.find(p => p.id === produtoId);
         if (produto) {
@@ -291,17 +274,17 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
   };
 
   // Cálculo de ROI (licença permanente)
-  const calcularROI = (cartState = debouncedCarrinho) => {
-    const custoTotal = calcularCustoTotal(cartState);
-    if (custoTotal === 0) return { porcentagem: 0, paybackMeses: 0, retornoMensal: 0 };
+  const calcularROI = (cartState = debouncedCarrinho, custoOverride?: number) => {
+    const custoBase = typeof custoOverride === 'number' ? custoOverride : calcularCustoTotal(cartState);
+    if (custoBase === 0) return { porcentagem: 0, paybackMeses: 0, retornoMensal: 0 };
 
     // Economia mensal baseada nas seleções do carrinho
     const economiaMensal = receitaMensalEstimada;
     const retornoMensal = economiaMensal;
 
     // Para licença permanente, custo é único
-    const paybackMeses = Math.ceil(custoTotal / economiaMensal);
-    const roiAnual = ((retornoMensal * 12) / custoTotal) * 100;
+    const paybackMeses = Math.ceil(custoBase / economiaMensal);
+    const roiAnual = ((retornoMensal * 12) / custoBase) * 100;
 
     return {
       porcentagem: Math.round(roiAnual),
@@ -311,10 +294,37 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
   };
 
   const custoTotal = calcularCustoTotal(debouncedCarrinho);
-  const roiData = calcularROI(debouncedCarrinho);
+  const recommendedIds = ['financeiro-gestao-contas-clientes','gestao-contratos','timeos'];
+  const hasAllRecommended = recommendedIds.every(id => !!carrinho[id]?.selecionado);
+  const hasBrandforgeModulesSelected = Object.values(carrinho['brandforge-infraestrutura']?.modulos || {}).some(Boolean);
+  const discount = (recommendedApplied && hasAllRecommended && !hasBrandforgeModulesSelected)
+    ? Math.round(custoTotal * 0.13)
+    : 0;
+  useEffect(() => {
+    if (hasBrandforgeModulesSelected && recommendedApplied) {
+      // Ao selecionar subitens do BrandForge, remove o desconto de fidelização
+      setRecommendedApplied(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasBrandforgeModulesSelected]);
+
+  // Aplicação automática do desconto quando os três itens recomendados forem selecionados manualmente
+  useEffect(() => {
+    if (hasAllRecommended && !hasBrandforgeModulesSelected && !recommendedApplied) {
+      setRecommendedApplied(true);
+      const dt = new Date();
+      dt.setDate(dt.getDate() + 10);
+      setDiscountUntil(dt.getTime());
+    }
+  }, [hasAllRecommended, hasBrandforgeModulesSelected, recommendedApplied]);
+  const custoConsiderado = Math.max(0, custoTotal - discount);
+  const roiData = calcularROI(debouncedCarrinho, custoConsiderado);
 
   // Para o Step Card de ROI, investimento total é o investimento único
-  const investimentoTotalAnual = custoTotal;
+  const investimentoTotalAnual = custoConsiderado;
+  const entrada30 = Math.round(investimentoTotalAnual * 0.30);
+  const saldoAte = Math.max(0, investimentoTotalAnual - entrada30);
+  const parcela6 = saldoAte > 0 ? Math.ceil(saldoAte / 6) : 0;
 
   // Insights estimados por módulo, baseados nas soluções propostas nas etapas anteriores
   const insightsPorModulo: Array<{
@@ -325,36 +335,36 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
     bullets: Array<{ label: string; value: string; detalhe?: string; tipo?: 'up' | 'down' | 'neutral' }>
   }> = [
     {
-      id: 'financeiro-crm',
-      titulo: 'OpsUnit Financeiro + CRM',
+      id: 'controle-financeiro',
+      titulo: 'OpsUnit Controle Financeiro',
       icon: DollarSign,
       corIcone: 'text-emerald-400',
       bullets: [
-        { label: 'Conversão lead → cliente', value: '+15% a +30%', tipo: 'up', detalhe: 'playbooks, SLAs e follow-ups automáticos' },
-        { label: 'Ciclo comercial', value: '-20% a -40%', tipo: 'down', detalhe: 'pipeline organizado e tarefas com lembretes' },
-        { label: 'Inadimplência', value: '-15% a -30%', tipo: 'down', detalhe: 'cobrança automática e D+2 de fechamento' }
+        { label: 'Fechamento de caixa', value: 'D+2', tipo: 'neutral', detalhe: 'conciliação e recebimentos com baixas automáticas' },
+        { label: 'Inadimplência', value: '-15% a -30%', tipo: 'down', detalhe: 'alertas e cobranças automáticas' },
+        { label: 'Tempo administrativo financeiro', value: '-20% a -40%', tipo: 'down', detalhe: 'automação de boletos, repasses e despesas' }
       ]
     },
     {
-      id: 'area-cliente',
-      titulo: 'Área do Cliente (Mentoria)',
-      icon: Users,
-      corIcone: 'text-fuchsia-400',
-      bullets: [
-        { label: 'NPS', value: '+15 a +25 pts', tipo: 'up', detalhe: 'experiência premium com trilhas e sessões registradas' },
-        { label: 'Tempo operacional', value: '-30% a -50%', tipo: 'down', detalhe: 'centralização de entregáveis e checklists' },
-        { label: 'Renovação/retensão', value: '+10% a +20%', tipo: 'up', detalhe: 'acompanhamento contínuo e valor percebido' }
-      ]
-    },
-    {
-      id: 'brandforge',
-      titulo: 'BrandForge (Presença Digital)',
+      id: 'brandforge-crm',
+      titulo: 'BrandForge Base Digital + CRM Vivo',
       icon: Target,
       corIcone: 'text-pink-400',
       bullets: [
-        { label: 'Leads inbound', value: '+30% a +60%', tipo: 'up', detalhe: 'site 1.0 + LPs com CTAs rastreáveis' },
-        { label: 'Origem rastreada', value: '≥ 90%', tipo: 'neutral', detalhe: 'integração LP → CRM + tags' },
-        { label: 'CAC', value: '-10% a -20%', tipo: 'down', detalhe: 'melhor distribuição de canais' }
+        { label: 'Leads inbound', value: '+30% a +60%', tipo: 'up', detalhe: 'portal de imóveis com captação integrada' },
+        { label: 'Origem rastreada', value: '≥ 90%', tipo: 'neutral', detalhe: 'integração portal → CRM com tags' },
+        { label: 'Ciclo comercial', value: '-20% a -40%', tipo: 'down', detalhe: 'pipeline e tarefas com SLAs' }
+      ]
+    },
+    {
+      id: 'ops-operacoes',
+      titulo: 'OpsUnit Operações',
+      icon: Settings,
+      corIcone: 'text-indigo-400',
+      bullets: [
+        { label: 'Tempo p/ fechamento de contratos', value: '-30% a -50%', tipo: 'down', detalhe: 'templates e assinatura eletrônica' },
+        { label: 'Gestão de rotina', value: 'Centralizada', tipo: 'neutral', detalhe: 'imóveis, laudos, manutenções, correspondências e comunicados' },
+        { label: 'Erros operacionais', value: '-20% a -40%', tipo: 'down', detalhe: 'workflows digitais e auditoria' }
       ]
     }
   ];
@@ -364,14 +374,14 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
       <div className="container mx-auto px-6">
         {/* Header */}
         <header className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-step-5 rounded-full text-step-5 font-medium mb-6">
-            🔴 ETAPA 5
-          </div>
+          {showStepBadge && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-step-5 rounded-full text-step-5 font-medium mb-6">🔴 ETAPA 5</div>
+          )}
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-step-5 to-step-1 bg-clip-text text-transparent">
-            OTIMIZAR
+            {headingTitle ?? 'OTIMIZAR'}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            O Futuro Integrado: Veja como todos os sistemas trabalham juntos no TimeOS.
+            {headingSubtitle ?? 'O Futuro Integrado: Veja como todos os sistemas trabalham juntos no TimeOS.'}
           </p>
         </header>
 
@@ -404,13 +414,16 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
             <h4 className="text-xl font-bold mb-4">Retorno sobre Investimento</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="text-sm text-muted-foreground mb-1">Investimento Total (12 meses)</div>
+                <div className="text-sm text-muted-foreground mb-1">Investimento Inicial (licença)</div>
                 <div className="text-2xl font-bold">R$ {investimentoTotalAnual.toLocaleString()}</div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground mb-1">Retorno Projetado</div>
                 <div className="text-2xl font-bold text-step-5">R$ {(roiData.retornoMensal * 12).toLocaleString()}</div>
               </div>
+            </div>
+            <div className="mt-3 text-sm text-muted-foreground">
+              Economia mensal estimada: <span className="font-semibold text-foreground">R$ {receitaMensalEstimada.toLocaleString()}</span>
             </div>
             <div className="mt-4 p-4 bg-step-5/10 rounded-lg">
               <div className="text-lg font-bold text-step-5">ROI: {roiData.porcentagem}%</div>
@@ -476,19 +489,46 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                 <CardDescription className="text-blue-100/70 text-lg mb-6">
                   Selecione os módulos que fazem sentido para sua operação e veja o ROI em tempo real
                 </CardDescription>
-                <div className="mt-4 inline-flex items-start gap-3 px-4 py-3 bg-amber-500/15 border border-amber-300/40 rounded-xl text-left">
-                  <Sparkles className="w-4 h-4 text-amber-300 mt-0.5" aria-hidden="true" />
-                  <p className="text-sm text-amber-100 font-medium">
-                    Todos os valores exibidos aqui são ilustrativos. Este aplicativo é uma demonstração da consultoria e não representa proposta comercial real.
-                  </p>
+                <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => {
+                      cartClear();
+                      ['financeiro-gestao-contas-clientes','gestao-contratos','timeos'].forEach((id) => {
+                        cartToggleProduct(id);
+                      });
+                      setRecommendedApplied(true);
+                      const dt = new Date();
+                      dt.setDate(dt.getDate() + 10);
+                      setDiscountUntil(dt.getTime());
+                      if (sessionId) trackCtaClick(sessionId, 'selecao_recomendada', { ids: ['financeiro-gestao-contas-clientes','gestao-contratos','timeos'] }, 'Desejada');
+                    }}
+                  >
+                    Seleção Recomendada
+                  </Button>
+                  {recommendedApplied && hasAllRecommended && !hasBrandforgeModulesSelected && (
+                    <div className="inline-flex items-center gap-2 px-3 py-2 bg-emerald-500/15 border border-emerald-400/30 rounded-md">
+                      <span className="text-emerald-300 text-sm font-medium">Desconto de fidelização aplicado: 13%</span>
+                      {discountUntil && (
+                        <span className="text-emerald-200 text-xs">Válido até {new Date(discountUntil).toLocaleDateString('pt-BR')}</span>
+                      )}
+                    </div>
+                  )}
                 </div>
+                {/* Disclaimer removido conforme solicitação */}
 
                 {/* Modelo de Precificação: somente licença permanente */}
 
                 {custoTotal > 0 && (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-400/30 rounded-full">
                     <span className="text-green-300 text-sm font-medium">Investimento Total:</span>
-                    <span className="text-green-400 font-bold">R$ {custoTotal.toLocaleString()}</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-green-400 font-bold">R$ {custoConsiderado.toLocaleString()}</span>
+                      {discount > 0 && (
+                        <span className="text-white/70 line-through text-sm">R$ {custoTotal.toLocaleString()}</span>
+                      )}
+                    </div>
                   </div>
                 )}
               </CardHeader>
@@ -499,7 +539,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                   <div className="space-y-6">
                     <h4 className="text-xl font-bold text-white mb-4">Soluções Disponíveis</h4>
 
-                    {orcamentoOptions.map((produto) => {
+                    {orcamentoOptions.filter(p => !HIDDEN_PRODUCT_IDS.has(p.id)).map((produto) => {
                       const ProdutoIcon = produto.icon;
                       const isSelected = carrinho[produto.id]?.selecionado ?? false;
 
@@ -539,7 +579,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                             </div>
                           </CardHeader>
 
-                          {isSelected && (
+                          {(isSelected || produto.id === 'brandforge-infraestrutura') && (
                             <CardContent className="pt-0">
                               <div className="space-y-3">
                                 <h5 className="text-sm font-semibold text-white mb-3">Módulos Adicionais</h5>
@@ -605,14 +645,14 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        {Object.keys(carrinho).filter(id => carrinho[id]?.selecionado).length === 0 ? (
+                        {Object.keys(carrinho).filter(id => !HIDDEN_PRODUCT_IDS.has(id) && carrinho[id]?.selecionado).length === 0 ? (
                           <p className="text-blue-100/70 text-center py-4">
                             Nenhum produto selecionado
                           </p>
                         ) : (
                           <div className="space-y-3">
                             {Object.entries(carrinho)
-                              .filter(([_, config]) => config.selecionado)
+                              .filter(([id, config]) => !HIDDEN_PRODUCT_IDS.has(id) && config.selecionado)
                               .map(([produtoId]) => {
                                 const produto = orcamentoOptions.find(p => p.id === produtoId);
                                 if (!produto) return null;
@@ -670,14 +710,15 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                             Calculadora de ROI Inteligente
                           </CardTitle>
                         </CardHeader>
-                                                <CardContent>
+                        <CardContent>
                            <div className="space-y-4">
                               <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
                                 <span className="text-white">Investimento Total</span>
-                                <div className="text-right">
-                                  <span className="text-green-400 font-bold text-xl">
-                                    R$ {custoTotal.toLocaleString()}
-                                  </span>
+                                <div className="text-right flex items-baseline gap-2">
+                                  <span className="text-green-400 font-bold text-xl">R$ {custoConsiderado.toLocaleString()}</span>
+                                  {discount > 0 && (
+                                    <span className="text-white/70 line-through text-sm">R$ {custoTotal.toLocaleString()}</span>
+                                  )}
                                 </div>
                               </div>
 
@@ -717,6 +758,40 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                             </div>
                           </CardContent>
                         </Card>
+
+                        {/* Condições de Pagamento */}
+                        <Card className="bg-white/5 border-white/10">
+                          <CardHeader>
+                            <CardTitle className="text-white flex items-center gap-2">
+                              <CreditCard className="w-5 h-5 text-blue-300" />
+                              Condições de Pagamento
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3 text-blue-100/80">
+                              <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                                <span>Entrada</span>
+                                <span className="font-semibold text-white">30%</span>
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                                <span>Saldo</span>
+                                <span className="font-semibold text-white">até 6x no boleto, pix ou cartão</span>
+                              </div>
+                              {custoConsiderado > 0 && (
+                                <div className="mt-1 text-sm text-blue-100/70">
+                                  <div className="flex items-center justify-between">
+                                    <span>Entrada estimada (30%)</span>
+                                    <span className="text-green-300 font-medium">R$ {entrada30.toLocaleString()}</span>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span>Saldo em até 6x</span>
+                                    <span className="text-green-300 font-medium">R$ {saldoAte.toLocaleString()} ({parcela6.toLocaleString()} / mês)</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
                       </div>
                     </div>
                     <div className="space-y-3">
@@ -724,7 +799,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                         <Button
                           onClick={() => {
                             setShowOrcamento(false);
-                            setCarrinho({}); // Limpa o carrinho ao voltar
+                            cartClear();
                           }}
                           variant="outline"
                           className="flex-1 border-white/20 text-white hover:bg-white/10"
@@ -733,7 +808,7 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                           Voltar
                         </Button>
                         <Button
-                          onClick={() => setCarrinho({})}
+                          onClick={() => cartClear()}
                           variant="outline"
                           className="border-red-400/30 text-red-300 hover:bg-red-500/10"
                           disabled={custoTotal === 0}
@@ -749,8 +824,15 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                             .map(([id]) => orcamentoOptions.find(p => p.id === id)?.nome || id)
                             .map(nome => `- ${nome}`)
                             .join('%0A');
-                          const totalStr = custoTotal.toLocaleString();
-                          const msg = `Olá, gostaria de solicitar uma proposta detalhada:%0AInvestimento Total: R$ ${totalStr}%0AProdutos:%0A${selections}`;
+                          const totalStr = custoConsiderado.toLocaleString();
+                          const msgParts = [
+                            `Olá, gostaria de solicitar uma proposta detalhada:`,
+                            `Investimento Total: R$ ${totalStr}`,
+                            ...(discount > 0 ? [`(Com desconto de fidelização 13%${discountUntil ? `, válido até ${new Date(discountUntil).toLocaleDateString('pt-BR')}` : ''})`] : []),
+                            `Produtos:`,
+                            selections
+                          ];
+                          const msg = msgParts.join('%0A');
                           window.open(`https://wa.me/5511943334229?text=${encodeURIComponent(msg)}`, '_blank');
                           // Track action
                           if (sessionId) {
@@ -775,10 +857,10 @@ export const Step5Otimizar = ({ onComplete, sessionId }: Step5OtimizarProps) => 
                     <div className="max-w-4xl mx-auto text-center">
                       <div>
                         <h4 className="text-3xl font-bold text-white mb-4">
-                          Pronto para Transformar seu Hotel e Eventos?
+                          Pronto para Transformar sua Operação?
                         </h4>
                         <p className="text-xl text-blue-100/80 mb-8">
-                          Esta não é apenas uma proposta. É o futuro da hospitalidade e eventos sendo construído agora mesmo.
+                          Esta não é apenas uma proposta. É o futuro do seu negócio sendo construído agora mesmo.
                         </p>
                       </div>
 

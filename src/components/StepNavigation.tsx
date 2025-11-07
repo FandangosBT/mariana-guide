@@ -7,6 +7,7 @@ interface StepNavigationProps {
   onPrevious: () => void;
   onNext: () => void;
   canGoNext?: boolean;
+  onStepSelect?: (index: number) => void;
 }
 
 const stepColors = [
@@ -22,7 +23,8 @@ export const StepNavigation = ({
   totalSteps, 
   onPrevious, 
   onNext,
-  canGoNext = true 
+  canGoNext = true,
+  onStepSelect,
 }: StepNavigationProps) => {
   return (
     <nav className="step-nav" aria-label="Navegação entre etapas" role="navigation">

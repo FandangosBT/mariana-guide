@@ -16,7 +16,7 @@ const scannerData = {
   data: "Setembro/2025",
   consultoria: "Q7 Ops",
   contextoGeral:
-    "A agência oferece serviços de marketing digital e mentoria premium, porém enfrenta dificuldades de centralização e organização: informações dispersas em WhatsApp, planilhas e documentos; ausência de página institucional (reduz credibilidade); receio de prospectar por medo de sobrecarga; e a necessidade de uma Área do Cliente para entregar mentorias com mais profissionalismo.",
+    "A operação enfrenta dificuldades de centralização e organização: informações dispersas em WhatsApp, planilhas e documentos; ausência de portal institucional; receio de escalar por sobrecarga; e a necessidade de um ambiente organizado para relacionamento com clientes.",
   processos: {
     financeiro: [
       "Controle manual em planilhas (fluxo de caixa, contas a pagar/receber).",
@@ -50,8 +50,8 @@ const scannerData = {
   alavancas: {
     curtoPrazo: [
       "BrandForge™ – Base Digital: página institucional + identidade digital profissional.",
-      "OpsUnit – CRM Vivo + Financeiro Vivo: centralização de clientes, contratos, faturas e fluxo de caixa.",
-      "Área do Cliente (OpsUnit): portal exclusivo para mentorias premium.",
+      "OpsUnit Controle Financeiro + CRM Vivo: boletos, recebimentos, fluxo de caixa, repasses e despesas; organização de clientes/contratos.",
+      "Área do Cliente (OpsUnit): portal exclusivo para relacionamento e entregas.",
     ],
     medioPrazo: [
       "OpsUnit – KPIs Automatizados: dashboards em tempo real para campanhas.",
@@ -66,7 +66,7 @@ const scannerData = {
     passo1:
       "BrandForge™ + CRM Vivo: Site institucional e base digital organizada; Cadastro único de clientes e leads.",
     passo2:
-      "Financeiro Vivo + Área do Cliente: Fluxo de caixa automatizado; Portal exclusivo para entrega da mentoria.",
+      "Controle Financeiro + Área do Cliente: Fluxo de caixa automatizado; Portal organizado para relacionamento.",
     passo3:
       "KPIs Automatizados + Contratos Digitais: Dashboards em tempo real; Contratos e faturas digitais.",
     passo4:
@@ -93,8 +93,8 @@ export const Step1Escutar = ({ onNext, sessionId }: Step1EscutarProps) => {
     }
     // Criar link para download do arquivo PDF
     const link = document.createElement('a');
-    link.href = '/Scanner-Operacional-EPICO-Demo.pdf';
-    link.download = 'Scanner-Operacional-EPICO-Demo.pdf';
+    link.href = '/Scanner-Operacional-EPICO-Mariana-Gomes-Imoveis.pdf';
+    link.download = 'Scanner-Operacional-EPICO-Mariana-Gomes-Imoveis.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

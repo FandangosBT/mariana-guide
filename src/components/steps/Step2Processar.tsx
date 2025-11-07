@@ -38,7 +38,7 @@ const CATEGORIES: Array<{
   {
     id: "financeiro",
     icon: FileText,
-    title: "Financeiro & Fluxo de Caixa",
+    title: "Controle Financeiro & Fluxo de Caixa",
     bullets: [
       "Controle em planilhas manuais, sem dashboards consolidados.",
       "Orçamentos refeitos várias vezes, sem padronização.",
@@ -156,8 +156,8 @@ export const Step2Processar = ({ onNext, sessionId }: Step2ProcessarProps) => {
     }
     // Criar link para download do arquivo PDF
     const link = document.createElement('a');
-    link.href = '/Mapa-de-Gargalos-Invisiveis-Demo.pdf';
-    link.download = 'Mapa-de-Gargalos-Invisiveis-Demo.pdf';
+    link.href = '/Mapa-de-Gargalos-Invisiveis-Mariana-Gomes-Imoveis.pdf';
+    link.download = 'Mapa-de-Gargalos-Invisiveis-Mariana-Gomes-Imoveis.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -342,7 +342,7 @@ export const Step2Processar = ({ onNext, sessionId }: Step2ProcessarProps) => {
                 A agência está presa em rotinas manuais, duplicidade de processos e falta de clareza estratégica. Esses gargalos invisíveis afetam diretamente a credibilidade, a eficiência operacional e a capacidade de escalar clientes e mentorias.
               </p>
               <ul className="space-y-2">
-                <li>• Passo inicial: BrandForge (site institucional + CRM básico) + OpsUnit – Financeiro Vivo (impacto imediato, organização de clientes e previsibilidade financeira).</li>
+                <li>• Passo inicial: BrandForge (site/portal + CRM básico) + OpsUnit Controle Financeiro (impacto imediato, previsibilidade financeira e organização).</li>
                 <li>• Expansão natural: Área do Cliente Premium + KPIs Automatizados (profissionalização da entrega e clareza em resultados).</li>
                 <li>• Médio prazo: Contratos Digitais Integrados + Funil de Leads (eficiência comercial + menos retrabalho).</li>
                 <li>• Longo prazo: TimeOS (painel centralizado para controle total da operação).</li>

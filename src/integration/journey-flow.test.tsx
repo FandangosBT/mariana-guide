@@ -55,90 +55,45 @@ vi.mock('react-router-dom', () => ({
   Route: ({ element }: { element: React.ReactNode }) => <div>{element}</div>,
 }));
 
-describe('Journey Flow Integration', () => {
+describe('Journey Flow Integration (2 etapas)', () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('completa fluxo 1→5 com tracking', async () => {
+  it('completa fluxo 1→2 com tracking', async () => {
     render(
       <AuthProvider>
         <Index />
       </AuthProvider>
     );
 
-    // Step 1: ESCUTAR
+    // Passo 1: Situação Atual
     await waitFor(() => {
-      expect(screen.getByText('ESCUTAR')).toBeInTheDocument();
+      expect(screen.getByText('Situação Atual')).toBeInTheDocument();
     });
 
-    // Expande um item do accordion
-    const accordionItem = screen.getByText('1. Contexto Geral');
-    await user.click(accordionItem);
-
-    // Avança para próxima etapa
-    const nextButton = screen.getByRole('button', { name: /continuar/i });
+    // Avança para o plano
+    const nextButton = screen.getByRole('button', { name: /avançar para o plano/i });
     await user.click(nextButton);
 
-    // Step 2: PROCESSAR
+    // Passo 2: Situação Desejada
     await waitFor(() => {
-      expect(screen.getByText('PROCESSAR')).toBeInTheDocument();
+      expect(screen.getByText('Situação Desejada')).toBeInTheDocument();
     });
 
-    // Interage com o heatmap
-    const heatmapPoints = screen.getAllByRole('button');
-    if (heatmapPoints.length > 0) {
-      await user.hover(heatmapPoints[0]);
-    }
+    // Abre o compositor de orçamento
+    const customizeBtn = screen.getByRole('button', { name: /personalizar orçamento/i });
+    await user.click(customizeBtn);
 
-    // Avança para próxima etapa
-    const processButton = screen.getByRole('button', { name: /identificar as soluções/i });
-    await user.click(processButton);
+    // Seleciona um produto
+    const product = await screen.findByText('OpsUnit Controle Financeiro');
+    await user.click(product);
 
-    // Step 3: IDENTIFICAR
-    await waitFor(() => {
-      expect(screen.getByText('IDENTIFICAR')).toBeInTheDocument();
-    });
-
-    // Interage com soluções
-    const solutionCards = screen.getAllByText(/Solução/);
-    if (solutionCards.length > 0) {
-      await user.click(solutionCards[0]);
-    }
-
-    // Avança para próxima etapa
-    const identifyButton = screen.getByRole('button', { name: /avançar para criação do plano/i });
-    await user.click(identifyButton);
-
-    // Step 4: CRIAR
-    await waitFor(() => {
-      expect(screen.getByText('CRIAR')).toBeInTheDocument();
-    });
-
-    // Interage com pilotos
-    const pilotCards = screen.getAllByText(/Piloto/);
-    if (pilotCards.length > 0) {
-      await user.click(pilotCards[0]);
-    }
-
-    // Avança para próxima etapa
-    const createButton = screen.getByRole('button', { name: /ver o futuro completo/i });
-    await user.click(createButton);
-
-    // Step 5: OTIMIZAR
-    await waitFor(() => {
-      expect(screen.getByText('OTIMIZAR')).toBeInTheDocument();
-    });
-
-    // Interage com widgets
-    const simulateButton = screen.getByRole('button', { name: /simular/i });
-    await user.click(simulateButton);
-
-    // Finaliza jornada
-    const finishButton = screen.getByRole('button', { name: /agendar conversa estratégica para implementar soluções/i });
-    await user.click(finishButton);
+    // Solicita proposta detalhada (CTA final)
+    const proposalBtn = await screen.findByRole('button', { name: /solicitar proposta detalhada/i });
+    await user.click(proposalBtn);
 
     // Verifica se chegou na tela de conclusão
     await waitFor(() => {
@@ -146,24 +101,19 @@ describe('Journey Flow Integration', () => {
     });
   });
 
-  it('gera PDF ao final da jornada', async () => {
+  it('gera PDF no Passo 2', async () => {
     render(
       <AuthProvider>
         <Index />
       </AuthProvider>
     );
 
-    // Navega até Step 5
-    for (let i = 0; i < 4; i++) {
-      const nextButton = screen.getByRole('button', { name: /avançar|continuar|identificar as soluções|avançar para criação do plano|ver o futuro completo/i });
-      await user.click(nextButton);
-      await waitFor(() => {
-        expect(screen.getByText(/OTIMIZAR|PROCESSAR|IDENTIFICAR|CRIAR/)).toBeInTheDocument();
-      });
-    }
+    // Vai para Passo 2
+    const nextButton = await screen.findByRole('button', { name: /avançar para o plano/i });
+    await user.click(nextButton);
 
     // Clica no botão de PDF
-    const pdfButton = screen.getByRole('button', { name: /baixar resumo completo da jornada em pdf/i });
+    const pdfButton = await screen.findByRole('button', { name: /baixar jornada \(pdf\)/i });
     await user.click(pdfButton);
 
     // Verifica se PDF foi gerado
@@ -178,20 +128,15 @@ describe('Journey Flow Integration', () => {
       </AuthProvider>
     );
 
-    // Step 1: Seleciona problemas
     await waitFor(() => {
-      expect(screen.getByText('ESCUTAR')).toBeInTheDocument();
+      expect(screen.getByText('Situação Atual')).toBeInTheDocument();
     });
 
-    const accordionItem = screen.getByText('1. Contexto Geral');
-    await user.click(accordionItem);
-
-    // Avança e volta
-    const nextButton = screen.getByRole('button', { name: /continuar/i });
-    await user.click(nextButton);
+    const nextButton2 = screen.getByRole('button', { name: /avançar para o plano/i });
+    await user.click(nextButton2);
 
     await waitFor(() => {
-      expect(screen.getByText('PROCESSAR')).toBeInTheDocument();
+      expect(screen.getByText('Situação Desejada')).toBeInTheDocument();
     });
 
     const backButton = screen.getByRole('button', { name: /voltar/i });
@@ -199,7 +144,7 @@ describe('Journey Flow Integration', () => {
 
     // Verifica se voltou para Step 1
     await waitFor(() => {
-      expect(screen.getByText('ESCUTAR')).toBeInTheDocument();
+      expect(screen.getByText('Situação Atual')).toBeInTheDocument();
     });
   });
 });

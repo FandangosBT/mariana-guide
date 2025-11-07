@@ -55,27 +55,27 @@ const BLUEPRINT = {
 const MODULES: ModuleItem[] = [
   {
     id: "financeiro_crm",
-    title: "OpsUnit Financeiro Vivo + CRM Vivo (MVP ~90 dias)",
+    title: "OpsUnit Controle Financeiro (MVP ~90 dias)",
     objetivo:
-      "Unificar leads e clientes; integrar proposta → contrato → fatura com baixa automática; garantir previsibilidade de caixa e dashboards em tempo real.",
+      "Automatizar e centralizar a gestão financeira: boletos, recebimentos, fluxo de caixa, repasses e despesas, garantindo previsibilidade em tempo real.",
     fluxos: [
-      { id: "A", title: "Pipeline de Leads", bullets: [
-        "Lead captado (site, bio IG, WhatsApp) → pipeline CRM",
+      { id: "A", title: "Boletos & Recebimentos", bullets: [
+        "Emissão/baixa automática (cartão, Pix, boleto)",
       ]},
-      { id: "B", title: "Proposta → Contrato → Fatura", bullets: [
-        "Proposta digital vinculada ao card → contrato assinado online → fatura emitida",
+      { id: "B", title: "Fluxo de Caixa & Repasses", bullets: [
+        "Painel de caixa e repasses com conciliação",
       ]},
-      { id: "C", title: "Conciliação de Recebíveis", bullets: [
-        "Cartão, Pix, boleto com baixa automática",
+      { id: "C", title: "Despesas", bullets: [
+        "Lançamentos e categorização com recorrências",
       ]},
       { id: "D", title: "Alertas", bullets: [
         "Inadimplência e vencimentos (WhatsApp/E-mail)",
       ]},
     ],
     entregaveis: [
-      "Painel Financeiro (AP/AR, fluxo de caixa, inadimplência)",
-      "Painel Comercial (pipeline, conversão, ticket médio)",
-      "Integrações: WhatsApp Cloud, Clicksign/DocuSign, gateway de pagamentos",
+      "Painel Financeiro (AP/AR, fluxo de caixa, repasses e despesas)",
+      "Dashboards de previsibilidade",
+      "Integrações: pagamentos e assinatura eletrônica",
     ],
     stackMinima: [
       "Next.js (painéis)",
@@ -83,51 +83,49 @@ const MODULES: ModuleItem[] = [
       "n8n (gatilhos)",
       "Postgres",
       "Redis",
-      "Clicksign",
       "Gateway pagamentos",
     ],
     kpis: [
-      "100% propostas → contrato → fatura",
       "Fechamento de caixa em D+2",
-      "+20% taxa de conversão",
+      "Redução de tempo administrativo (-20% a -40%)",
       "Inadimplência monitorada em D+7/D+30",
     ],
-    tags: ["financeiro", "crm", "contratos", "faturas", "whatsapp"],
+    tags: ["financeiro", "fluxo_de_caixa", "repasses", "despesas"],
   },
   {
     id: "area_cliente",
-    title: "Área do Cliente (Mentoria Premium) (MVP ~90 dias)",
+    title: "Área do Cliente (Portal) (MVP ~90 dias)",
     objetivo:
-      "Portal exclusivo para mentorados com clareza de agenda, trilhas, entregáveis e checkpoints; tirar operação do WhatsApp e criar experiência premium escalável.",
+      "Portal exclusivo para clientes com entregáveis, comunicados e histórico; tira operação do WhatsApp e profissionaliza a experiência.",
     fluxos: [
       { id: "A", title: "Onboarding", bullets: [
         "Automático após pagamento",
       ]},
-      { id: "B", title: "Gestão da Mentoria", bullets: [
-        "Upload de materiais, agenda de sessões, registro de tarefas/conclusões",
+      { id: "B", title: "Gestão do Relacionamento", bullets: [
+        "Materiais, comunicados e registro de status",
       ]},
       { id: "C", title: "Feedback/NPS", bullets: [
-        "NPS/feedback pós-sessão direto no portal",
+        "NPS/feedback direto no portal",
       ]},
     ],
     entregaveis: [
       "Portal web por cliente (acesso individual)",
-      "Trilhas digitais de mentoria com progresso",
+      "Linha do tempo de entregáveis e comunicados",
       "Checklists e tarefas vinculadas",
     ],
     stackMinima: [
       "Next.js (portal)",
-      "Node.js/TS (trilhas/tarefas)",
+      "Node.js/TS (tarefas/comunicados)",
       "Postgres",
       "S3 (materiais)",
       "n8n (notificações)",
     ],
     kpis: [
-      "≥ 80% sessões registradas no portal",
+      "≥ 80% interações registradas no portal",
       "NPS ≥ 70",
-      "-40% tempo em organização manual",
+      "-30% tempo em organização manual",
     ],
-    tags: ["mentoria", "portal", "nps", "trilhas"],
+    tags: ["portal", "nps", "relacionamento"],
   },
   {
     id: "brandforge",
