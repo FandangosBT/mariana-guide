@@ -9,7 +9,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_PASSWORD = 'DemoEPICO';
+const AUTH_PASSWORD = 'EncontroEPICO';
 const AUTH_STORAGE_KEY = 'timeos-auth-status';
 
 interface AuthProviderProps {
